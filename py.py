@@ -14,6 +14,7 @@ from tkinter import messagebox
 from pickle import *
 from validate_email import validate_email
 from datetime import datetime
+import os
 
 
 class menu_principal(tkinter.Tk):
@@ -36,7 +37,7 @@ class menu_principal(tkinter.Tk):
         self.lbl_titulo = Label(self, text="Menu Principal", font=("Arial", 20), bg="white")
         self.lbl_titulo.place(x=175)
         
-        self.btn_1 = Button(self, text="Configuración",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
+        self.btn_1 = Button(self, text="Configuración",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.abrir_configuracion)
         self.btn_1.place(x=posx1, y=50)
 
         self.btn_2 = Button(self, text="Cargar Cajero",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
@@ -57,9 +58,16 @@ class menu_principal(tkinter.Tk):
         self.btn_7 = Button(self, text="Salida de vehiculo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
         self.btn_7.place(x=posx1, y=275)
 
-        self.btn_6 = Button(self, text="Ayuda",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
+        self.btn_6 = Button(self, text="Ayuda",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.abrir_ayuda)
         self.btn_6.place(x=posx2, y=275)
 
+    def abrir_configuracion(self):
+        self.destroy()
+        self.configuracion = configuracion()
+        self.configuracion.mainloop()
+
+    def abrir_ayuda(self):
+        os.startfile('p3.pdf')
 class configuracion(tkinter.Tk):
     def __init__(self):
         Tk.__init__(self)
@@ -153,7 +161,7 @@ class configuracion(tkinter.Tk):
         self.confirmar = Button(self, text="Confirmar", font=fo,bg='blue2',fg='white',command=lambda:self.guardar())
         self.confirmar.place(x=175, y=500)
 
-        self.cancelar = Button(self, text="Cancelar", font=fo, bg='blue2',fg='white',command=lambda:self.destroy())
+        self.cancelar = Button(self, text="Cancelar", font=fo, bg='blue2',fg='white',command=lambda:self.salir())
         self.cancelar.place(x=275, y=500)
 
     def guardar(self):
@@ -351,36 +359,39 @@ class configuracion(tkinter.Tk):
         
         #Se abre el archivo de configuracion y se lee el contenido
         f=open('configuracion.dat','r')
-        lines=f.readlines()
+        line=f.read()
         f.close()
-        conf=[]
-        for line in lines:
-            conf.append(eval(line[:-1]))
+        conf=eval(line)
 
         g=[]
         #Se comparan las listas y se crea una nueva lista con los nuevos valores
         for n_i,i in enumerate(conf):
             if subres[n_i]==0 or subres[n_i]=='':
-                g.append(str(i)+'\n')
+                g.append(str(i))
             else:
                 if i!=subres[n_i]:
-                   g.append(str(subres[n_i])+'\n')
+                   g.append(str(subres[n_i]))
                 else:
-                   g.append(str(i)+'\n')
+                   g.append(str(i))
         
         print(g)
         #se crea un mensaje para confirmar la configuracion
         ask= messagebox.askquestion("Confirmar", "¿Está seguro de que desea guardar la configuración?")
         if ask=='yes':
             f=open('configuracion.dat','w')
-            for i in g:
-                f.write(str(i))
+            f.write(str(g))
             f.close()
             messagebox.showinfo("Confirmación", "Configuración guardada")
             self.destroy()
+            self.principal=menu_principal()
+            self.principal.mainloop()
         else:
             messagebox.showinfo("Atención", "La configuración no se ha guardado")
 
+    def salir(self):
+        self.destroy()
+        self.principal=menu_principal()
+        self.principal.mainloop()
 
 class cargar_cajero(tkinter.Tk):
     def __init__(self):
@@ -391,5 +402,10 @@ class cargar_cajero(tkinter.Tk):
         self.config(bg='white')
         self.iconbitmap('dolar.ico')
 
+        self.l1 = tkinter.Label(self, text="Cargar cajero", font=("Arial", 20), bg='white')
+        self.l1.place(x=100, y=10)
 
-cargar_cajero().mainloop()
+
+
+
+configuracion().mainloop()

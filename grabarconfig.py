@@ -1,20 +1,8 @@
 from pickle import *
 
 fk=open('configuracion.dat','w')
+dato=[27,2500,1000,'erimanuabca@gmail.com',20,5,10,25,1000,2000,5000,10000,20000]
 
-fk.write('''20
-1000
-500
-'erimanuabca@gmail.com'
-15
-5
-10
-25
-1000
-2000
-5000
-10000
-20000
-''')
+fk.write(str(dato))
 
 fk.close()
