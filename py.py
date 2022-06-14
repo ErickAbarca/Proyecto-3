@@ -393,19 +393,632 @@ class configuracion(tkinter.Tk):
         self.principal=menu_principal()
         self.principal.mainloop()
 
+
 class cargar_cajero(tkinter.Tk):
     def __init__(self):
         Tk.__init__(self)
+
+        fo=("Arial", 12)
+        fila1=50
+        fila2=80
+        fila3=110
+        fila4=140
+        fila5=170
+        fila6=200
+        fila7=240
+        fila8=270
+        fila9=300
+        fila10=330
+        fila11=360
+        fila12=390
+
+        col1=10
+        col2=230
+        col3=310
+        col4=475
+        col5=605
+        col6=725
+        col7=810
+
+        f=open('configuracion.dat','r')
+        line=f.read()
+        f.close()
+        conf=eval(line)
+
+        self.txtmoneda1=conf[5]
+        self.txtmoneda2=conf[6]
+        self.txtmoneda3=conf[7]
+        self.txtbillet1=conf[8]
+        self.txtbillet2=conf[9]
+        self.txtbillet3=conf[10]
+        self.txtbillet4=conf[11]
+        self.txtbillet5=conf[12]
+
+        fi=open('cajero.dat','r')
+        salact=fi.read()
+        fi.close()
+        salact=eval(salact)
+
+        self.cantmoneda1=salact[0]
+        self.cantmoneda2=salact[1]
+        self.cantmoneda3=salact[2]
+        self.cantbillet1=salact[3]
+        self.cantbillet2=salact[4]
+        self.cantbillet3=salact[5]
+        self.cantbillet4=salact[6]
+        self.cantbillet5=salact[7]
+
+        #Variables que se usan para guardar los valores de las cajas de texto
+        self.total_mon_antes=self.cantmoneda1+self.cantmoneda2+self.cantmoneda3
+        self.total_bil_antes=self.cantbillet1+self.cantbillet2+self.cantbillet3+self.cantbillet4+self.cantbillet5
+        self.total_cant_car_mon=0
+        self.total_cant_car_bil=0
+        self.tot_din_car_mon=0
+        self.tot_din_car_bil=0
+        self.tot_can_fin_mon=0
+        self.tot_can_fin_bil=0
+
+        #Variables que se usan para guardar los valores en el arvhivo al final
+        self.subres=[0,0,0,0,0,0,0,0]
+
+
         self.title("Parqueo-Cargar Cajero")
-        self.geometry("300x200")
+        self.geometry("900x600")
         self.resizable(False, False)
         self.config(bg='white')
         self.iconbitmap('dolar.ico')
 
         self.l1 = tkinter.Label(self, text="Cargar cajero", font=("Arial", 20), bg='white')
-        self.l1.place(x=100, y=10)
+        self.l1.place(x=350, y=10)
+
+        self.l2 = tkinter.Label(self, text="Denominación", font=fo, bg='white')
+        self.l2.place(x=10, y=fila2)
+
+        self.l3 = tkinter.Label(self, text="Saldo antes de la carga", font=fo, bg='white')
+        self.l3.place(x=200, y=fila1)
+
+        self.l4 = tkinter.Label(self, text="Carga", font=fo, bg='white')
+        self.l4.place(x=550, y=fila1)
+
+        self.l5 = tkinter.Label(self, text="Saldo", font=fo, bg='white')
+        self.l5.place(x=750, y=fila1)
+
+        self.l6 = tkinter.Label(self, text="Cantidad", font=fo, bg='white')
+        self.l6.place(x=200, y=fila2)
+
+        self.l7 = tkinter.Label(self, text="Total", font=fo, bg='white')
+        self.l7.place(x=300, y=fila2)
+
+        self.l8 = tkinter.Label(self, text="Cantidad", font=fo, bg='white')
+        self.l8.place(x=500, y=fila2)
+
+        self.l9 = tkinter.Label(self, text="Total", font=fo, bg='white')
+        self.l9.place(x=600, y=fila2)
+
+        self.l10 = tkinter.Label(self, text="Cantidad", font=fo, bg='white')
+        self.l10.place(x=700, y=fila2)
+
+        self.l11 = tkinter.Label(self, text="Total", font=fo, bg='white')
+        self.l11.place(x=800, y=fila2)
+
+        ##############
+        #Moneda 1
+        ##############
+
+        self.l12 = tkinter.Label(self, text='Monedas de '+self.txtmoneda1, font=fo, bg='white')
+        self.l12.place(x=col1, y=fila3)
+
+        self.l13 = tkinter.Label(self, text=self.cantmoneda1, font=fo, bg='white')
+        self.l13.place(x=col2, y=fila3)
+
+        self.totalm1=int(self.cantmoneda1)*int(self.txtmoneda1)
+
+        self.l14 = tkinter.Label(self, text=str(self.totalm1), font=fo, bg='white')
+        self.l14.place(x=col3, y=fila3)
+        
+        self.ent_m1=Entry(self, width=10, font=fo, bg='white')
+        self.ent_m1.place(x=col4, y=fila3)
+        
+        self.total_carga_m1 = tkinter.Label(self, text=0, font=fo, bg='white')
+        self.total_carga_m1.place(x=col5, y=fila3)
+
+        self.cant_tot_m1 = tkinter.Label(self, text=self.cantmoneda1, font=fo, bg='white')
+        self.cant_tot_m1.place(x=col6, y=fila3)
+
+        self.tot_fin_m1 = tkinter.Label(self, text=str(self.totalm1), font=fo, bg='white')
+        self.tot_fin_m1.place(x=col7, y=fila3)
+
+        self.ent_m1.bind("<KeyRelease>", self.cargar_m1)
+
+        #################
+        #Moneda 2
+        #################
+
+        self.l15 = tkinter.Label(self, text='Monedas de '+self.txtmoneda2, font=fo, bg='white')
+        self.l15.place(x=col1, y=fila4)
+
+        self.l16 = tkinter.Label(self, text=self.cantmoneda2, font=fo, bg='white')
+        self.l16.place(x=col2, y=fila4)
+
+        self.totalm2=int(self.cantmoneda2)*int(self.txtmoneda2)
+
+        self.l17 = tkinter.Label(self, text=str(self.totalm2), font=fo, bg='white')
+        self.l17.place(x=col3, y=fila4)
+
+        self.ent_m2=Entry(self, width=10, font=fo, bg='white')
+        self.ent_m2.place(x=col4, y=fila4)
+
+        self.total_carga_m2 = tkinter.Label(self, text=0, font=fo, bg='white')
+        self.total_carga_m2.place(x=col5, y=fila4)
+
+        self.cant_tot_m2 = tkinter.Label(self, text=self.cantmoneda2, font=fo, bg='white')
+        self.cant_tot_m2.place(x=col6, y=fila4)
+
+        self.tot_fin_m2 = tkinter.Label(self, text=str(self.totalm2), font=fo, bg='white')
+        self.tot_fin_m2.place(x=col7, y=fila4)
+
+        self.ent_m2.bind("<KeyRelease>", self.cargar_m2)
+
+        #################
+        #Moneda 3
+        #################
+
+        self.l18 = tkinter.Label(self, text='Monedas de '+self.txtmoneda3, font=fo, bg='white')
+        self.l18.place(x=col1, y=fila5)
+
+        self.l19 = tkinter.Label(self, text=self.cantmoneda3, font=fo, bg='white')
+        self.l19.place(x=col2, y=fila5)
+
+        self.totalm3=int(self.cantmoneda3)*int(self.txtmoneda3)
+
+        self.l20 = tkinter.Label(self, text=str(self.totalm3), font=fo, bg='white')
+        self.l20.place(x=col3, y=fila5)
+
+        self.ent_m3=Entry(self, width=10,font=fo, bg='white')
+        self.ent_m3.place(x=col4, y=fila5)
+
+        self.total_carga_m3 = tkinter.Label(self,text=0 ,font=fo, bg='white')
+        self.total_carga_m3.place(x=col5, y=fila5)
+
+        self.cant_tot_m3 = tkinter.Label(self, text=self.cantmoneda3, font=fo, bg='white')
+        self.cant_tot_m3.place(x=col6, y=fila5)
+
+        self.tot_fin_m3 = tkinter.Label(self, text=str(self.totalm3), font=fo, bg='white')
+        self.tot_fin_m3.place(x=col7, y=fila5)
+
+        self.ent_m3.bind("<KeyRelease>", self.cargar_m3)
+
+        
+        #################
+        #Total de monedas
+        #################
+
+        self.l21 = tkinter.Label(self, text='Total de monedas', font=fo, bg='white')
+        self.l21.place(x=col1, y=fila6)
+
+        self.l22 = tkinter.Label(self, text=self.total_mon_antes, font=fo, bg='white')
+        self.l22.place(x=col2, y=fila6)
+
+        self.l23 = tkinter.Label(self, text=(self.totalm1+self.totalm2+self.totalm3), font=fo, bg='white')
+        self.l23.place(x=col3, y=fila6)
+
+        self.tot_cant_car_m = tkinter.Label(self, text=0, font=fo, bg='white')
+        self.tot_cant_car_m.place(x=col4, y=fila6)
+
+        self.tot_carg_tot_m = tkinter.Label(self, text=0, font=fo, bg='white')
+        self.tot_carg_tot_m.place(x=col5, y=fila6)
+
+        self.sald_cant_tot_m = tkinter.Label(self, text=str(int(self.cant_tot_m1.cget('text'))+int(self.cant_tot_m2.cget('text'))+int(self.cant_tot_m3.cget('text'))), font=fo, bg='white')
+        self.sald_cant_tot_m.place(x=col6, y=fila6)
+
+        self.sald_tot_m = tkinter.Label(self, text=str(int(self.tot_fin_m1.cget('text'))+int(self.tot_fin_m2.cget('text'))+int(self.tot_fin_m3.cget('text'))), font=fo, bg='white')
+        self.sald_tot_m.place(x=col7, y=fila6)
+
+        #################
+        #Billete 1
+        #################
+
+        self.l24 = tkinter.Label(self, text='Billetes de '+self.txtbillet1, font=fo, bg='white')
+        self.l24.place(x=col1, y=fila7)
+
+        self.l25 = tkinter.Label(self, text=self.cantbillet1, font=fo, bg='white')
+        self.l25.place(x=col2, y=fila7)
+
+        self.totalb1=int(self.cantbillet1)*int(self.txtbillet1)
+        
+        self.l26 = tkinter.Label(self, text=str(self.totalb1), font=fo, bg='white')
+        self.l26.place(x=col3, y=fila7)
+
+        self.ent_b1=Entry(self, width=10, font=fo, bg='white')
+        self.ent_b1.place(x=col4, y=fila7)
+
+        self.total_carga_b1 = tkinter.Label(self, text=0, font=fo, bg='white')
+        self.total_carga_b1.place(x=col5, y=fila7)
+
+        self.cant_tot_b1 = tkinter.Label(self, text=self.cantbillet1, font=fo, bg='white')
+        self.cant_tot_b1.place(x=col6, y=fila7)
+
+        self.tot_fin_b1 = tkinter.Label(self, text=str(self.totalb1), font=fo, bg='white')
+        self.tot_fin_b1.place(x=col7, y=fila7)
+
+        self.ent_b1.bind("<KeyRelease>", self.cargar_b1)
+
+        #################
+        #Billete 2
+        #################
+
+        self.l27 = tkinter.Label(self, text='Billetes de '+self.txtbillet2, font=fo, bg='white')
+        self.l27.place(x=col1, y=fila8)
+
+        self.l28 = tkinter.Label(self, text=self.cantbillet2, font=fo, bg='white')
+        self.l28.place(x=col2, y=fila8)
+
+        self.totalb2=int(self.cantbillet2)*int(self.txtbillet2)
+
+        self.l29 = tkinter.Label(self, text=str(self.totalb2), font=fo, bg='white')
+        self.l29.place(x=col3, y=fila8)
+
+        self.ent_b2=Entry(self, width=10, font=fo, bg='white')
+        self.ent_b2.place(x=col4, y=fila8)
+
+        self.total_carga_b2 = tkinter.Label(self, text=0, font=fo, bg='white')
+        self.total_carga_b2.place(x=col5, y=fila8)
+        
+        self.cant_tot_b2 = tkinter.Label(self, text=self.cantbillet2, font=fo, bg='white')
+        self.cant_tot_b2.place(x=col6, y=fila8)
+
+        self.tot_fin_b2 = tkinter.Label(self, text=str(self.totalb2), font=fo, bg='white')
+        self.tot_fin_b2.place(x=col7, y=fila8)
+
+        self.ent_b2.bind("<KeyRelease>", self.cargar_b2)
+
+        #################
+        #Billete 3
+        #################
+
+        self.l30 = tkinter.Label(self, text='Billetes de '+self.txtbillet3, font=fo, bg='white')
+        self.l30.place(x=col1, y=fila9)
+
+        self.l31 = tkinter.Label(self, text=self.cantbillet3, font=fo, bg='white')
+        self.l31.place(x=col2, y=fila9)
+
+        self.totalb3=int(self.cantbillet3)*int(self.txtbillet3)
+        
+        self.l32 = tkinter.Label(self, text=str(self.totalb3), font=fo, bg='white')
+        self.l32.place(x=col3, y=fila9)
+
+        self.ent_b3=Entry(self, width=10, font=fo, bg='white')
+        self.ent_b3.place(x=col4, y=fila9)
+
+        self.total_carga_b3 = tkinter.Label(self, text=0, font=fo, bg='white')
+        self.total_carga_b3.place(x=col5, y=fila9)
+
+        self.cant_tot_b3 = tkinter.Label(self, text=self.cantbillet3, font=fo, bg='white')
+        self.cant_tot_b3.place(x=col6, y=fila9)
+
+        self.tot_fin_b3 = tkinter.Label(self, text=str(self.totalb3), font=fo, bg='white')
+        self.tot_fin_b3.place(x=col7, y=fila9)
+
+        self.ent_b3.bind("<KeyRelease>", self.cargar_b3)
+
+        #################
+        #Billete 4
+        #################
+
+        self.l33 = tkinter.Label(self, text='Billetes de '+self.txtbillet4, font=fo, bg='white')
+        self.l33.place(x=col1, y=fila10)
+
+        self.l34 = tkinter.Label(self, text=self.cantbillet4, font=fo, bg='white')
+        self.l34.place(x=col2, y=fila10)
+
+        self.totalb4=int(self.cantbillet4)*int(self.txtbillet4)
+        
+        self.l35 = tkinter.Label(self, text=str(self.totalb4), font=fo, bg='white')
+        self.l35.place(x=col3, y=fila10)
+
+        self.ent_b4=Entry(self, width=10, font=fo, bg='white')
+        self.ent_b4.place(x=col4, y=fila10)
+
+        self.total_carga_b4 = tkinter.Label(self, text=0, font=fo, bg='white')
+        self.total_carga_b4.place(x=col5, y=fila10)
+
+        self.cant_tot_b4 = tkinter.Label(self, text=self.cantbillet4, font=fo, bg='white')
+        self.cant_tot_b4.place(x=col6, y=fila10)
+
+        self.tot_fin_b4 = tkinter.Label(self, text=str(self.totalb4), font=fo, bg='white')
+        self.tot_fin_b4.place(x=col7, y=fila10)
+
+        self.ent_b4.bind("<KeyRelease>", self.cargar_b4)
+
+        #################
+        #Billete 5
+        #################
+
+        self.l36 = tkinter.Label(self, text='Billetes de '+self.txtbillet5, font=fo, bg='white')
+        self.l36.place(x=col1, y=fila11)
+
+        self.l37 = tkinter.Label(self, text=self.cantbillet5, font=fo, bg='white')
+        self.l37.place(x=col2, y=fila11)
+
+        self.totalb5=int(self.cantbillet5)*int(self.txtbillet5)
+
+        self.l38 = tkinter.Label(self, text=str(self.totalb5), font=fo, bg='white')
+        self.l38.place(x=col3, y=fila11)
+
+        self.ent_b5=Entry(self, width=10, font=fo, bg='white')
+        self.ent_b5.place(x=col4, y=fila11)
+
+        self.total_carga_b5 = tkinter.Label(self, text=0, font=fo, bg='white')
+        self.total_carga_b5.place(x=col5, y=fila11)
+
+        self.cant_tot_b5 = tkinter.Label(self, text=self.cantbillet5, font=fo, bg='white')
+        self.cant_tot_b5.place(x=col6, y=fila11)
+
+        self.tot_fin_b5 = tkinter.Label(self, text=str(self.totalb5), font=fo, bg='white')
+        self.tot_fin_b5.place(x=col7, y=fila11)
+
+        self.ent_b5.bind("<KeyRelease>", self.cargar_b5)
+
+        #################
+        #Total de Billetes
+        #################
+
+        self.l39 = tkinter.Label(self, text='Total de Billetes', font=fo, bg='white')
+        self.l39.place(x=col1, y=fila12)
+
+        self.l40 = tkinter.Label(self, text=self.total_bil_antes, font=fo, bg='white')
+        self.l40.place(x=col2, y=fila12)
+
+        self.l23 = tkinter.Label(self, text=(self.totalb1+self.totalb2+self.totalb3+self.totalb4+self.totalb5), font=fo, bg='white')
+        self.l23.place(x=col3, y=fila12)
+
+        self.tot_cant_car_b = tkinter.Label(self, text=0, font=fo, bg='white')
+        self.tot_cant_car_b.place(x=col4, y=fila12)
+
+        self.tot_carg_tot_b = tkinter.Label(self, text=0, font=fo, bg='white')
+        self.tot_carg_tot_b.place(x=col5, y=fila12)
+
+        self.sald_cant_tot_b = tkinter.Label(self, text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))), font=fo, bg='white')
+        self.sald_cant_tot_b.place(x=col6, y=fila12)
+
+        self.sald_tot_b = tkinter.Label(self, text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))), font=fo, bg='white')
+        self.sald_tot_b.place(x=col7, y=fila12)
+
+
+
+    ##############################
+    #Funciones de Cargar monedas
+    ##############################
+    def cargar_m1(self,event):
+        ent=self.ent_m1.get()
+        if ent=='':
+            ent=0
+        try:
+            ent=int(ent)
+            self.total_carga_m1.config(text=(ent*int(self.txtmoneda1)))
+            self.cant_tot_m1.config(text=str(ent+int(self.cantmoneda1)))
+            self.cant_fin_mon1=int(((ent+int(self.cantmoneda1))*int(self.txtmoneda1)))
+            self.tot_fin_m1.config(text=self.cant_fin_mon1)
+            ent2=self.ent_m2.get()
+            ent3=self.ent_m3.get()
+            if ent2=='':
+                ent2=0
+            if ent3=='':
+                ent3=0
+            self.total_cant_car_mon=int(ent)+int(ent2)+int(ent3)
+            self.tot_cant_car_m.config(text=self.total_cant_car_mon)
+            self.subres[0]=self.total_carga_m1.cget('text')
+            self.tot_carg_tot_m.config(text=str(int(self.subres[0])+int(self.subres[1])+int(self.subres[2])))
+            self.sald_cant_tot_m.config(text=str(int(self.cant_tot_m1.cget('text'))+int(self.cant_tot_m2.cget('text'))+int(self.cant_tot_m3.cget('text'))))
+            self.sald_tot_m.config(text=str(int(self.tot_fin_m1.cget('text'))+int(self.tot_fin_m2.cget('text'))+int(self.tot_fin_m3.cget('text'))))
+        except:
+            self.ent_m1.delete(0,END)
+        
+    def cargar_m2(self,event):
+        ent=self.ent_m2.get()
+        if ent=='':
+            ent=0
+        try:
+            ent=int(ent)
+            self.total_carga_m2.config(text=(ent*int(self.txtmoneda2)))
+            self.cant_tot_m2.config(text=str(ent+int(self.cantmoneda2)))
+            self.cant_fin_mon2=int(((ent+int(self.cantmoneda2))*int(self.txtmoneda2)))
+            self.tot_fin_m2.config(text=str((ent+int(self.cantmoneda2))*int(self.txtmoneda2)))
+            ent1=self.ent_m1.get()
+            ent3=self.ent_m3.get()
+            if ent1=='':
+                ent1=0
+            if ent3=='':
+                ent3=0
+            self.total_cant_car_mon=int(ent)+int(ent1)+int(ent3)
+            self.tot_cant_car_m.config(text=self.total_cant_car_mon)
+            self.subres[1]=self.total_carga_m2.cget('text')
+            self.tot_carg_tot_m.config(text=str(int(self.subres[0])+int(self.subres[1])+int(self.subres[2])))
+            self.sald_cant_tot_m.config(text=str(int(self.cant_tot_m1.cget('text'))+int(self.cant_tot_m2.cget('text'))+int(self.cant_tot_m3.cget('text'))))
+            self.sald_tot_m.config(text=str(int(self.tot_fin_m1.cget('text'))+int(self.tot_fin_m2.cget('text'))+int(self.tot_fin_m3.cget('text'))))
+        except:
+            self.ent_m2.delete(0,END)
+
+    def cargar_m3(self,event):
+        ent=self.ent_m3.get()
+        if ent=='':
+            ent=0
+        try:
+            ent=int(ent)
+            self.total_carga_m3.config(text=(ent*int(self.txtmoneda3)))
+            self.cant_tot_m3.config(text=str(ent+int(self.cantmoneda3)))
+            self.cant_fin_mon3=int(((ent+int(self.cantmoneda3))*int(self.txtmoneda3)))
+            self.tot_fin_m3.config(text=str((ent+int(self.cantmoneda3))*int(self.txtmoneda3)))
+            ent1=self.ent_m1.get()
+            ent2=self.ent_m2.get()
+            if ent1=='':
+                ent1=0
+            if ent2=='':
+                ent2=0
+            self.total_cant_car_mon=int(ent)+int(ent1)+int(ent2)
+            self.tot_cant_car_m.config(text=self.total_cant_car_mon)
+            self.subres[2]=self.total_carga_m3.cget('text')
+            self.tot_carg_tot_m.config(text=str(int(self.subres[0])+int(self.subres[1])+int(self.subres[2])))
+            self.sald_cant_tot_m.config(text=str(int(self.cant_tot_m1.cget('text'))+int(self.cant_tot_m2.cget('text'))+int(self.cant_tot_m3.cget('text'))))
+            self.sald_tot_m.config(text=str(int(self.tot_fin_m1.cget('text'))+int(self.tot_fin_m2.cget('text'))+int(self.tot_fin_m3.cget('text'))))
+        except:
+            self.ent_m3.delete(0,END)
+
+    ############################
+    #Funciones de cargar billetes
+    ############################
+
+    def cargar_b1(self,event):
+        ent=self.ent_b1.get()
+        if ent=='':
+            ent=0  
+        try:
+            ent=int(ent)
+            self.total_carga_b1.config(text=(ent*int(self.txtbillet1)))
+            self.cant_tot_b1.config(text=str(ent+int(self.cantbillet1)))
+            self.tot_fin_b1.config(text=str((ent+int(self.cantbillet1))*int(self.txtbillet1)))
+            ent2=self.ent_b2.get()
+            ent3=self.ent_b3.get()
+            ent4=self.ent_b4.get()
+            ent5=self.ent_b5.get()
+            if ent2=='':
+                ent2=0
+            if ent3=='':
+                ent3=0
+            if ent4=='':
+                ent4=0
+            if ent5=='':
+                ent5=0
+            self.total_cant_car_b=int(ent)+int(ent2)+int(ent3)+int(ent4)+int(ent5)
+            self.tot_cant_car_b.config(text=self.total_cant_car_b)
+            self.subres[3]=self.total_carga_b1.cget('text')
+            self.tot_carg_tot_b.config(text=str(int(self.subres[3])+int(self.subres[4])+int(self.subres[5])+int(self.subres[6])+int(self.subres[7])))
+            self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
+            self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
+        except:
+            self.ent_b1.delete(0,END)
+
+    def cargar_b2(self,event):
+        ent=self.ent_b2.get()
+        if ent=='':
+            ent=0
+        try:
+            ent=int(ent)
+            self.total_carga_b2.config(text=(ent*int(self.txtbillet2)))
+            self.cant_tot_b2.config(text=str(ent+int(self.cantbillet2)))
+            self.tot_fin_b2.config(text=str((ent+int(self.cantbillet2))*int(self.txtbillet2)))
+            ent1=self.ent_b1.get()
+            ent3=self.ent_b3.get()
+            ent4=self.ent_b4.get()
+            ent5=self.ent_b5.get()
+            if ent1=='':
+                ent1=0
+            if ent3=='':
+                ent3=0
+            if ent4=='':
+                ent4=0
+            if ent5=='':
+                ent5=0
+            self.total_cant_car_b=int(ent)+int(ent1)+int(ent3)+int(ent4)+int(ent5)
+            self.tot_cant_car_b.config(text=self.total_cant_car_b)
+            self.subres[4]=self.total_carga_b2.cget('text')
+            self.tot_carg_tot_b.config(text=str(int(self.subres[3])+int(self.subres[4])+int(self.subres[5])+int(self.subres[6])+int(self.subres[7])))
+            self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
+            self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
+        except:
+            self.ent_b2.delete(0,END)
+
+    def cargar_b3(self,event):
+        ent=self.ent_b3.get()
+        if ent=='':
+            ent=0
+        try:
+            ent=int(ent)
+            self.total_carga_b3.config(text=(ent*int(self.txtbillet3)))
+            self.cant_tot_b3.config(text=str(ent+int(self.cantbillet3)))
+            self.tot_fin_b3.config(text=str((ent+int(self.cantbillet3))*int(self.txtbillet3)))
+            ent1=self.ent_b1.get()
+            ent2=self.ent_b2.get()
+            ent4=self.ent_b4.get()
+            ent5=self.ent_b5.get()
+            if ent1=='':
+                ent1=0
+            if ent2=='':
+                ent2=0
+            if ent4=='':
+                ent4=0
+            if ent5=='':
+                ent5=0
+            self.total_cant_car_b=int(ent)+int(ent1)+int(ent2)+int(ent4)+int(ent5)
+            self.tot_cant_car_b.config(text=self.total_cant_car_b)
+            self.subres[5]=self.total_carga_b3.cget('text')
+            self.tot_carg_tot_b.config(text=str(int(self.subres[3])+int(self.subres[4])+int(self.subres[5])+int(self.subres[6])+int(self.subres[7])))
+            self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
+            self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
+        except:
+            self.ent_b3.delete(0,END)
+
+    def cargar_b4(self,event):
+        ent=self.ent_b4.get()
+        if ent=='':
+            ent=0
+        try:
+            ent=int(ent)
+            self.total_carga_b4.config(text=(ent*int(self.txtbillet4)))
+            self.cant_tot_b4.config(text=str(ent+int(self.cantbillet4)))
+            self.tot_fin_b4.config(text=str((ent+int(self.cantbillet4))*int(self.txtbillet4)))
+            ent1=self.ent_b1.get()
+            ent2=self.ent_b2.get()
+            ent3=self.ent_b3.get()
+            ent5=self.ent_b5.get()
+            if ent1=='':
+                ent1=0
+            if ent2=='':
+                ent2=0
+            if ent3=='':
+                ent3=0
+            if ent5=='':
+                ent5=0
+            self.total_cant_car_b=int(ent)+int(ent1)+int(ent2)+int(ent3)+int(ent5)
+            self.tot_cant_car_b.config(text=self.total_cant_car_b)
+            self.subres[6]=self.total_carga_b4.cget('text')
+            self.tot_carg_tot_b.config(text=str(int(self.subres[3])+int(self.subres[4])+int(self.subres[5])+int(self.subres[6])+int(self.subres[7])))
+            self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
+            self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
+        except:
+            self.ent_b4.delete(0,END)
+
+    def cargar_b5(self,event):
+        ent=self.ent_b5.get()
+        if ent=='':
+            ent=0
+        try:
+            ent=int(ent)
+            self.total_carga_b5.config(text=(ent*int(self.txtbillet5)))
+            self.cant_tot_b5.config(text=str(ent+int(self.cantbillet5)))
+            self.tot_fin_b5.config(text=str((ent+int(self.cantbillet5))*int(self.txtbillet5)))
+            ent1=self.ent_b1.get()
+            ent2=self.ent_b2.get()
+            ent3=self.ent_b3.get()
+            ent4=self.ent_b4.get()
+            if ent1=='':
+                ent1=0
+            if ent2=='':
+                ent2=0
+            if ent3=='':
+                ent3=0
+            if ent4=='':
+                ent4=0
+            self.total_cant_car_b=int(ent)+int(ent1)+int(ent2)+int(ent3)+int(ent4)
+            self.tot_cant_car_b.config(text=self.total_cant_car_b)
+            self.subres[7]=self.total_carga_b5.cget('text')
+            self.tot_carg_tot_b.config(text=str(int(self.subres[3])+int(self.subres[4])+int(self.subres[5])+int(self.subres[6])+int(self.subres[7])))
+            self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
+            self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
+        except:
+            self.ent_b5.delete(0,END)
 
 
 
 
-configuracion().mainloop()
+cargar_cajero().mainloop()
