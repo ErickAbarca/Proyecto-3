@@ -40,7 +40,7 @@ class menu_principal(tkinter.Tk):
         self.btn_1 = Button(self, text="Configuración",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.abrir_configuracion)
         self.btn_1.place(x=posx1, y=50)
 
-        self.btn_2 = Button(self, text="Cargar Cajero",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
+        self.btn_2 = Button(self, text="Cargar Cajero",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.abrir_cargar_cajero)
         self.btn_2.place(x=posx1, y=125)
 
         self.btn_3 = Button(self, text="Saldo del Cajero",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
@@ -49,7 +49,7 @@ class menu_principal(tkinter.Tk):
         self.btn_4 = Button(self, text="Ingresos de dinero",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
         self.btn_4.place(x=posx2, y=50)
         
-        self.btn_5 = Button(self, text="Entrada de vehículo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
+        self.btn_5 = Button(self, text="Entrada de vehículo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.entrada_de_vehiculo)
         self.btn_5.place(x=posx2, y=125)
 
         self.btn_6 = Button(self, text="Cajero del Parqueo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
@@ -65,6 +65,16 @@ class menu_principal(tkinter.Tk):
         self.destroy()
         self.configuracion = configuracion()
         self.configuracion.mainloop()
+    
+    def abrir_cargar_cajero(self):
+        self.destroy()
+        self.cargar_cajero = cargar_cajero()
+        self.cargar_cajero.mainloop()
+
+    def entrada_de_vehiculo(self):
+        self.destroy()
+        self.entrada_de_vehiculo = entrada_de_vehiculo()
+        self.entrada_de_vehiculo.mainloop()
 
     def abrir_ayuda(self):
         os.startfile('p3.pdf')
@@ -392,8 +402,6 @@ class configuracion(tkinter.Tk):
         self.destroy()
         self.principal=menu_principal()
         self.principal.mainloop()
-
-
 class cargar_cajero(tkinter.Tk):
     def __init__(self):
         Tk.__init__(self)
@@ -411,6 +419,8 @@ class cargar_cajero(tkinter.Tk):
         fila10=330
         fila11=360
         fila12=390
+        fila13=430
+        fila14=470
 
         col1=10
         col2=230
@@ -459,11 +469,11 @@ class cargar_cajero(tkinter.Tk):
         self.tot_can_fin_bil=0
 
         #Variables que se usan para guardar los valores en el arvhivo al final
-        self.subres=[0,0,0,0,0,0,0,0]
+        self.subres=[self.cantmoneda1,self.cantmoneda2,self.cantmoneda3,self.cantbillet1,self.cantbillet2,self.cantbillet3,self.cantbillet4,self.cantbillet5]
 
 
         self.title("Parqueo-Cargar Cajero")
-        self.geometry("900x600")
+        self.geometry("900x550")
         self.resizable(False, False)
         self.config(bg='white')
         self.iconbitmap('dolar.ico')
@@ -783,36 +793,68 @@ class cargar_cajero(tkinter.Tk):
 
         self.sald_tot_b = tkinter.Label(self, text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))), font=fo, bg='white')
         self.sald_tot_b.place(x=col7, y=fila12)
+        
+        #################
+        #Total final
+        #################
 
+        self.l41 = tkinter.Label(self, text='Total del cajero', font=fo, bg='white')
+        self.l41.place(x=col1, y=fila13)
 
+        self.total_final=tkinter.Label(self, text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))), font=fo, bg='white')
+        self.total_final.place(x=col7, y=fila13)
+
+        #################
+        #Botones
+        #################
+
+        altura=2
+        ancho=15
+        fx=('Arial Nova',11)
+
+        self.b1 = tkinter.Button(self, text='Cargar',height=altura,width=ancho,bg='blue2',fg='white',font=fx,command=lambda:self.btn_guardar())
+        self.b1.place(x=col2-50, y=fila14)
+
+        self.b2 = tkinter.Button(self, text='Cancelar',height=altura,width=ancho,bg='blue2',fg='white',font=fx, command=lambda:self.btn_cancelar())
+        self.b2.place(x=col2+150, y=fila14)
+
+        self.b3 = tkinter.Button(self, text='Vaciar Cajero',height=altura,width=ancho,bg='blue2',fg='white',font=fx, command=lambda:self.btn_vaciar())
+        self.b3.place(x=col2+350, y=fila14)
 
     ##############################
     #Funciones de Cargar monedas
     ##############################
     def cargar_m1(self,event):
-        ent=self.ent_m1.get()
-        if ent=='':
-            ent=0
+        ent=self.ent_m1.get()#Obtenemos el valor de la caja de texto
+        if ent=='':#Si la caja de texto esta vacia
+            ent=0#Asignamos 0
         try:
-            ent=int(ent)
-            self.total_carga_m1.config(text=(ent*int(self.txtmoneda1)))
-            self.cant_tot_m1.config(text=str(ent+int(self.cantmoneda1)))
-            self.cant_fin_mon1=int(((ent+int(self.cantmoneda1))*int(self.txtmoneda1)))
-            self.tot_fin_m1.config(text=self.cant_fin_mon1)
+            ent=int(ent)#Convertimos a entero
+            tc=ent
+            self.total_carga_m1.config(text=(ent*int(self.txtmoneda1)))#Mostramos el total de la carga
+            cant_m1=ent+int(self.cantmoneda1)#Total de monedas
+            self.cant_tot_m1.config(text=str(cant_m1))#Mostramos la cantidad total
+            self.cant_fin_mon1=int(((ent+int(self.cantmoneda1))*int(self.txtmoneda1)))#Se calcula el total final
+            self.tot_fin_m1.config(text=self.cant_fin_mon1)#Mostramos el total final
+            #Se obtienen las entradas de los otros entrys
             ent2=self.ent_m2.get()
             ent3=self.ent_m3.get()
-            if ent2=='':
-                ent2=0
+            if ent2=='':#Si la caja de texto esta vacia
+                ent2=0#Asignamos 0
             if ent3=='':
                 ent3=0
-            self.total_cant_car_mon=int(ent)+int(ent2)+int(ent3)
-            self.tot_cant_car_m.config(text=self.total_cant_car_mon)
-            self.subres[0]=self.total_carga_m1.cget('text')
-            self.tot_carg_tot_m.config(text=str(int(self.subres[0])+int(self.subres[1])+int(self.subres[2])))
+            #Se calcula el valor de los labels de carga
+            self.tot_cant_car_m.config(text=str(int(ent)+int(ent2)+int(ent3)))#Se obtiene el valor de la caja de texto
+            self.subres[0]=int(cant_m1)#Se asigna el valor a la lista
+            self.tot_carg_tot_m.config(text=str(int(self.total_carga_m1.cget('text'))+int(self.total_carga_m2.cget('text'))+int(self.total_carga_m3.cget('text'))))#Se obtiene el valor del total a cargar
+            #Se calculan los datos de los otros labels
             self.sald_cant_tot_m.config(text=str(int(self.cant_tot_m1.cget('text'))+int(self.cant_tot_m2.cget('text'))+int(self.cant_tot_m3.cget('text'))))
             self.sald_tot_m.config(text=str(int(self.tot_fin_m1.cget('text'))+int(self.tot_fin_m2.cget('text'))+int(self.tot_fin_m3.cget('text'))))
+            self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))#Se calcula el total final del cajero
         except:
-            self.ent_m1.delete(0,END)
+            self.ent_m1.delete(0,END)#si no es un número se borra el contenido de la caja de texto
+        
+    #se hace lo mismo que la anterior pero para el resto de monedas y billetes
         
     def cargar_m2(self,event):
         ent=self.ent_m2.get()
@@ -821,21 +863,22 @@ class cargar_cajero(tkinter.Tk):
         try:
             ent=int(ent)
             self.total_carga_m2.config(text=(ent*int(self.txtmoneda2)))
-            self.cant_tot_m2.config(text=str(ent+int(self.cantmoneda2)))
+            cant_m2=ent+int(self.cantmoneda2)
+            self.cant_tot_m2.config(text=str(cant_m2))
             self.cant_fin_mon2=int(((ent+int(self.cantmoneda2))*int(self.txtmoneda2)))
-            self.tot_fin_m2.config(text=str((ent+int(self.cantmoneda2))*int(self.txtmoneda2)))
+            self.tot_fin_m2.config(text=self.cant_fin_mon2)
             ent1=self.ent_m1.get()
             ent3=self.ent_m3.get()
             if ent1=='':
                 ent1=0
             if ent3=='':
                 ent3=0
-            self.total_cant_car_mon=int(ent)+int(ent1)+int(ent3)
-            self.tot_cant_car_m.config(text=self.total_cant_car_mon)
-            self.subres[1]=self.total_carga_m2.cget('text')
-            self.tot_carg_tot_m.config(text=str(int(self.subres[0])+int(self.subres[1])+int(self.subres[2])))
+            self.tot_cant_car_m.config(text=str(int(ent1)+int(ent)+int(ent3)))
+            self.subres[1]=int(cant_m2)
+            self.tot_carg_tot_m.config(text=str(int(self.total_carga_m1.cget('text'))+int(self.total_carga_m2.cget('text'))+int(self.total_carga_m3.cget('text'))))
             self.sald_cant_tot_m.config(text=str(int(self.cant_tot_m1.cget('text'))+int(self.cant_tot_m2.cget('text'))+int(self.cant_tot_m3.cget('text'))))
             self.sald_tot_m.config(text=str(int(self.tot_fin_m1.cget('text'))+int(self.tot_fin_m2.cget('text'))+int(self.tot_fin_m3.cget('text'))))
+            self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
         except:
             self.ent_m2.delete(0,END)
 
@@ -846,37 +889,40 @@ class cargar_cajero(tkinter.Tk):
         try:
             ent=int(ent)
             self.total_carga_m3.config(text=(ent*int(self.txtmoneda3)))
-            self.cant_tot_m3.config(text=str(ent+int(self.cantmoneda3)))
+            cant_m3=ent+int(self.cantmoneda3)
+            self.cant_tot_m3.config(text=str(cant_m3))
             self.cant_fin_mon3=int(((ent+int(self.cantmoneda3))*int(self.txtmoneda3)))
-            self.tot_fin_m3.config(text=str((ent+int(self.cantmoneda3))*int(self.txtmoneda3)))
+            self.tot_fin_m3.config(text=self.cant_fin_mon3)
             ent1=self.ent_m1.get()
             ent2=self.ent_m2.get()
             if ent1=='':
                 ent1=0
             if ent2=='':
                 ent2=0
-            self.total_cant_car_mon=int(ent)+int(ent1)+int(ent2)
-            self.tot_cant_car_m.config(text=self.total_cant_car_mon)
-            self.subres[2]=self.total_carga_m3.cget('text')
-            self.tot_carg_tot_m.config(text=str(int(self.subres[0])+int(self.subres[1])+int(self.subres[2])))
+            self.tot_cant_car_m.config(text=str(int(ent1)+int(ent2)+int(ent)))
+            self.subres[2]=int(cant_m3)
+            self.tot_carg_tot_m.config(text=str(int(self.total_carga_m1.cget('text'))+int(self.total_carga_m2.cget('text'))+int(self.total_carga_m3.cget('text'))))
             self.sald_cant_tot_m.config(text=str(int(self.cant_tot_m1.cget('text'))+int(self.cant_tot_m2.cget('text'))+int(self.cant_tot_m3.cget('text'))))
             self.sald_tot_m.config(text=str(int(self.tot_fin_m1.cget('text'))+int(self.tot_fin_m2.cget('text'))+int(self.tot_fin_m3.cget('text'))))
+            self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
         except:
             self.ent_m3.delete(0,END)
 
-    ############################
+    ##############################
     #Funciones de cargar billetes
-    ############################
+    ##############################
 
     def cargar_b1(self,event):
         ent=self.ent_b1.get()
         if ent=='':
-            ent=0  
+            ent=0
         try:
             ent=int(ent)
             self.total_carga_b1.config(text=(ent*int(self.txtbillet1)))
-            self.cant_tot_b1.config(text=str(ent+int(self.cantbillet1)))
-            self.tot_fin_b1.config(text=str((ent+int(self.cantbillet1))*int(self.txtbillet1)))
+            cant_b1=ent+int(self.cantbillet1)
+            self.cant_tot_b1.config(text=str(cant_b1))
+            self.cant_fin_billet1=int(((ent+int(self.cantbillet1))*int(self.txtbillet1)))
+            self.tot_fin_b1.config(text=self.cant_fin_billet1)
             ent2=self.ent_b2.get()
             ent3=self.ent_b3.get()
             ent4=self.ent_b4.get()
@@ -889,12 +935,12 @@ class cargar_cajero(tkinter.Tk):
                 ent4=0
             if ent5=='':
                 ent5=0
-            self.total_cant_car_b=int(ent)+int(ent2)+int(ent3)+int(ent4)+int(ent5)
-            self.tot_cant_car_b.config(text=self.total_cant_car_b)
-            self.subres[3]=self.total_carga_b1.cget('text')
-            self.tot_carg_tot_b.config(text=str(int(self.subres[3])+int(self.subres[4])+int(self.subres[5])+int(self.subres[6])+int(self.subres[7])))
+            self.tot_cant_car_b.config(text=str(int(ent2)+int(ent)+int(ent3)+int(ent4)+int(ent5)))
+            self.subres[3]=int(cant_b1)
+            self.tot_carg_tot_b.config(text=str(int(self.total_carga_b1.cget('text'))+int(self.total_carga_b2.cget('text'))+int(self.total_carga_b3.cget('text'))+int(self.total_carga_b4.cget('text'))+int(self.total_carga_b5.cget('text'))))
             self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
             self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
+            self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
         except:
             self.ent_b1.delete(0,END)
 
@@ -905,8 +951,10 @@ class cargar_cajero(tkinter.Tk):
         try:
             ent=int(ent)
             self.total_carga_b2.config(text=(ent*int(self.txtbillet2)))
-            self.cant_tot_b2.config(text=str(ent+int(self.cantbillet2)))
-            self.tot_fin_b2.config(text=str((ent+int(self.cantbillet2))*int(self.txtbillet2)))
+            cant_b2=ent+int(self.cantbillet2)
+            self.cant_tot_b2.config(text=str(cant_b2))
+            self.cant_fin_billet2=int(((ent+int(self.cantbillet2))*int(self.txtbillet2)))
+            self.tot_fin_b2.config(text=self.cant_fin_billet2)
             ent1=self.ent_b1.get()
             ent3=self.ent_b3.get()
             ent4=self.ent_b4.get()
@@ -919,12 +967,12 @@ class cargar_cajero(tkinter.Tk):
                 ent4=0
             if ent5=='':
                 ent5=0
-            self.total_cant_car_b=int(ent)+int(ent1)+int(ent3)+int(ent4)+int(ent5)
-            self.tot_cant_car_b.config(text=self.total_cant_car_b)
-            self.subres[4]=self.total_carga_b2.cget('text')
-            self.tot_carg_tot_b.config(text=str(int(self.subres[3])+int(self.subres[4])+int(self.subres[5])+int(self.subres[6])+int(self.subres[7])))
+            self.tot_cant_car_b.config(text=str(int(ent1)+int(ent)+int(ent3)+int(ent4)+int(ent5)))
+            self.subres[4]=int(cant_b2)
+            self.tot_carg_tot_b.config(text=str(int(self.total_carga_b1.cget('text'))+int(self.total_carga_b2.cget('text'))+int(self.total_carga_b3.cget('text'))+int(self.total_carga_b4.cget('text'))+int(self.total_carga_b5.cget('text'))))
             self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
             self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
+            self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
         except:
             self.ent_b2.delete(0,END)
 
@@ -935,8 +983,10 @@ class cargar_cajero(tkinter.Tk):
         try:
             ent=int(ent)
             self.total_carga_b3.config(text=(ent*int(self.txtbillet3)))
-            self.cant_tot_b3.config(text=str(ent+int(self.cantbillet3)))
-            self.tot_fin_b3.config(text=str((ent+int(self.cantbillet3))*int(self.txtbillet3)))
+            cant_b3=ent+int(self.cantbillet3)
+            self.cant_tot_b3.config(text=str(cant_b3))
+            self.cant_fin_billet3=int(((ent+int(self.cantbillet3))*int(self.txtbillet3)))
+            self.tot_fin_b3.config(text=self.cant_fin_billet3)
             ent1=self.ent_b1.get()
             ent2=self.ent_b2.get()
             ent4=self.ent_b4.get()
@@ -949,12 +999,12 @@ class cargar_cajero(tkinter.Tk):
                 ent4=0
             if ent5=='':
                 ent5=0
-            self.total_cant_car_b=int(ent)+int(ent1)+int(ent2)+int(ent4)+int(ent5)
-            self.tot_cant_car_b.config(text=self.total_cant_car_b)
-            self.subres[5]=self.total_carga_b3.cget('text')
-            self.tot_carg_tot_b.config(text=str(int(self.subres[3])+int(self.subres[4])+int(self.subres[5])+int(self.subres[6])+int(self.subres[7])))
+            self.tot_cant_car_b.config(text=str(int(ent1)+int(ent)+int(ent2)+int(ent4)+int(ent5)))
+            self.subres[5]=int(cant_b3)
+            self.tot_carg_tot_b.config(text=str(int(self.total_carga_b1.cget('text'))+int(self.total_carga_b2.cget('text'))+int(self.total_carga_b3.cget('text'))+int(self.total_carga_b4.cget('text'))+int(self.total_carga_b5.cget('text'))))
             self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
             self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
+            self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
         except:
             self.ent_b3.delete(0,END)
 
@@ -965,8 +1015,10 @@ class cargar_cajero(tkinter.Tk):
         try:
             ent=int(ent)
             self.total_carga_b4.config(text=(ent*int(self.txtbillet4)))
-            self.cant_tot_b4.config(text=str(ent+int(self.cantbillet4)))
-            self.tot_fin_b4.config(text=str((ent+int(self.cantbillet4))*int(self.txtbillet4)))
+            cant_b4=ent+int(self.cantbillet4)
+            self.cant_tot_b4.config(text=str(cant_b4))
+            self.cant_fin_billet4=int(((ent+int(self.cantbillet4))*int(self.txtbillet4)))
+            self.tot_fin_b4.config(text=self.cant_fin_billet4)
             ent1=self.ent_b1.get()
             ent2=self.ent_b2.get()
             ent3=self.ent_b3.get()
@@ -979,12 +1031,12 @@ class cargar_cajero(tkinter.Tk):
                 ent3=0
             if ent5=='':
                 ent5=0
-            self.total_cant_car_b=int(ent)+int(ent1)+int(ent2)+int(ent3)+int(ent5)
-            self.tot_cant_car_b.config(text=self.total_cant_car_b)
-            self.subres[6]=self.total_carga_b4.cget('text')
-            self.tot_carg_tot_b.config(text=str(int(self.subres[3])+int(self.subres[4])+int(self.subres[5])+int(self.subres[6])+int(self.subres[7])))
+            self.tot_cant_car_b.config(text=str(int(ent1)+int(ent)+int(ent2)+int(ent3)+int(ent5)))
+            self.subres[6]=int(cant_b4)
+            self.tot_carg_tot_b.config(text=str(int(self.total_carga_b1.cget('text'))+int(self.total_carga_b2.cget('text'))+int(self.total_carga_b3.cget('text'))+int(self.total_carga_b4.cget('text'))+int(self.total_carga_b5.cget('text'))))
             self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
             self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
+            self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
         except:
             self.ent_b4.delete(0,END)
 
@@ -995,8 +1047,10 @@ class cargar_cajero(tkinter.Tk):
         try:
             ent=int(ent)
             self.total_carga_b5.config(text=(ent*int(self.txtbillet5)))
-            self.cant_tot_b5.config(text=str(ent+int(self.cantbillet5)))
-            self.tot_fin_b5.config(text=str((ent+int(self.cantbillet5))*int(self.txtbillet5)))
+            cant_b5=ent+int(self.cantbillet5)
+            self.cant_tot_b5.config(text=str(cant_b5))
+            self.cant_fin_billet5=int(((ent+int(self.cantbillet5))*int(self.txtbillet5)))
+            self.tot_fin_b5.config(text=self.cant_fin_billet5)
             ent1=self.ent_b1.get()
             ent2=self.ent_b2.get()
             ent3=self.ent_b3.get()
@@ -1009,16 +1063,57 @@ class cargar_cajero(tkinter.Tk):
                 ent3=0
             if ent4=='':
                 ent4=0
-            self.total_cant_car_b=int(ent)+int(ent1)+int(ent2)+int(ent3)+int(ent4)
-            self.tot_cant_car_b.config(text=self.total_cant_car_b)
-            self.subres[7]=self.total_carga_b5.cget('text')
-            self.tot_carg_tot_b.config(text=str(int(self.subres[3])+int(self.subres[4])+int(self.subres[5])+int(self.subres[6])+int(self.subres[7])))
+            self.tot_cant_car_b.config(text=str(int(ent1)+int(ent)+int(ent2)+int(ent3)+int(ent4)))
+            self.subres[7]=int(cant_b5)
+            self.tot_carg_tot_b.config(text=str(int(self.total_carga_b1.cget('text'))+int(self.total_carga_b2.cget('text'))+int(self.total_carga_b3.cget('text'))+int(self.total_carga_b4.cget('text'))+int(self.total_carga_b5.cget('text'))))
             self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
             self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
+            self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
         except:
             self.ent_b5.delete(0,END)
 
+    #########################
+    #Funciones de botones
+    #########################
 
+    def btn_guardar(self):
+        ask=messagebox.askquestion("Guardar","¿Desea guardar los cambios?")
+        if ask=='yes':
+            fk=open('cajero.dat','w')
+            fk.write(str(self.subres))
+            fk.close()
+            messagebox.showinfo("Guardar","Se han guardado los cambios")
+            self.destroy()
+            cargar_cajero().mainloop()
+        else:
+            messagebox.showinfo("Guardar","No se han guardado los cambios")
 
+    def btn_cancelar(self):
+        ask=messagebox.askquestion("Cancelar","¿Desea cancelar?\nSe perderán los cambios")
+        if ask=='yes':
+            self.destroy()
+            menu_principal().mainloop()
+        else:
+            messagebox.showinfo("Cancelar","No se ha cancelado")
+    
+    def btn_vaciar(self):
+        ask=messagebox.askquestion("Vaciar","¿Desea vaciar el cajero?")
+        if ask=='yes':
+            self.subres=[0,0,0,0,0,0,0,0]
+            fk=open('cajero.dat','w')
+            fk.write(str(self.subres))
+            fk.close()
+            messagebox.showinfo("Vaciar","Se ha vaciado el cajero")
+            self.destroy()
+            cargar_cajero().mainloop()
+        else:
+            messagebox.showinfo("Vaciar","No se ha vaciado el cajero")
+class entrada_de_vehiculo(tkinter.Tk):
+    def __init__(self):
+        tkinter.Tk.__init__(self)
+        self.title('Entrada de vehículos')
+        self.geometry('500x500')
+        self.resizable(0,0)
+        self.iconbitmap('icon.ico')
 
-cargar_cajero().mainloop()
+menu_principal().mainloop()
