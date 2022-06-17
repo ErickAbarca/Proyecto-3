@@ -1112,7 +1112,7 @@ class entrada_de_vehiculo(tkinter.Tk):
     def __init__(self):
         tkinter.Tk.__init__(self)
         self.title('Parqueo-Entrada de vehículos')
-        self.geometry('500x500')
+        self.geometry('525x350')
         self.resizable(0,0)
         self.iconbitmap('icon.ico')
 
@@ -1128,7 +1128,7 @@ class entrada_de_vehiculo(tkinter.Tk):
 
         fo=('Arial',12)
 
-        col1=10
+        col1=20
         col2=250
         fila1=50
         fila2=90
@@ -1136,24 +1136,103 @@ class entrada_de_vehiculo(tkinter.Tk):
         fila4=170
         fila5=210
         fila6=250
-        fila7=290
-
         self.l1=tkinter.Label(self,text='Entrada de Vehículo',font=('Arial',20))
         self.l1.place(x=125,y=10)
 
         self.l2=tkinter.Label(self,text='Espacios Disponibles',font=fo)
         self.l2.place(x=col1,y=fila1)
 
-        self.l3=tkinter.Label(self,text=str(int(self.config[0])-int(len(self.parqueo))),font=fo)
+        self.total_espacios=int(int(self.config[0])-int(len(self.parqueo)))
+
+        if self.total_espacios>0:
+            self.l3=tkinter.Label(self,text=str(self.total_espacios),font=fo)
+        else:
+            self.l3=tkinter.Label(self,text='NO HAY ESPACIOS',font=('Arial',20,'bold'),fg='red')
+
         self.l3.place(x=col2,y=fila1)
 
         self.l4=tkinter.Label(self,text='Su Placa',font=fo)
         self.l4.place(x=col1,y=fila2)
 
-        self.ent_placa=tkinter.Entry(self,width=20)
+        self.ent_placa=tkinter.Entry(self,width=10,font=fo)
         self.ent_placa.place(x=col2,y=fila2)
 
         self.l5=tkinter.Label(self,text='Campo Asignado',font=fo)
-        
+        self.l5.place(x=col1,y=fila3)
 
-entrada_de_vehiculo().mainloop()
+        if self.total_espacios!=0:
+            for i in range(self.config[0]+1):
+                if i not in self.parqueo:
+                    if i==0:
+                        pass
+                    else:
+                        self.espacio_asignado=i
+                        break
+        else:
+            self.espacio_asignado=0
+        
+        self.l6=tkinter.Label(self,text=str(self.espacio_asignado),font=fo)
+        self.l6.place(x=col2,y=fila3)
+
+        self.l7=tkinter.Label(self,text='Hora de entrada',font=fo)
+        self.l7.place(x=col1,y=fila4)
+
+        self.hora_entrada=datetime.datetime.now().strftime('%H:%M %d/%m/%Y')
+        self.l8=tkinter.Label(self,text=self.hora_entrada,font=fo)
+        self.l8.place(x=col2,y=fila4)
+
+        self.l9=tkinter.Label(self,text='Precio por hora',font=fo)
+        self.l9.place(x=col1,y=fila5)
+
+        self.precio_hora=tkinter.Label(self,text=str(self.config[1]),font=fo)
+        self.precio_hora.place(x=col2,y=fila5)
+
+        #########################
+        #Botones
+        #########################
+
+        altura=2
+        ancho=10
+        fx=('Arial',12)
+
+        self.b1=tkinter.Button(self,text='Ok',bg='blue2',fg='white',font=fx,height=altura,width=ancho,command=self.btn_ok)
+        self.b1.place(x=col1+80,y=fila6)
+
+        self.b2=tkinter.Button(self,text='Cancelar',bg='blue2',fg='white',font=fx,height=altura,width=ancho,command=self.btn_cancelar)
+        self.b2.place(x=col2,y=fila6)
+
+
+    def btn_ok(self):
+        placa=self.ent_placa.get()
+        if placa=='':
+            messagebox.showinfo('Error','No ha ingresado la placa')
+        else:
+            ex=False
+            for i in self.parqueo.values():
+                if placa in i:
+                    ex=True
+                    break
+            if ex==True:
+                messagebox.showinfo('Error','El vehículo ya está en el parqueo')
+            else:
+                ask=messagebox.askquestion('Guardar','¿Desea registrar el vehículo?')
+                if ask=='yes':
+                    self.parqueo[self.espacio_asignado]=[placa,self.hora_entrada,0,0,0,self.espacio_asignado]
+                    fk=open('parqueo.dat','w')
+                    fk.write(str(self.parqueo))
+                    fk.close()
+                    messagebox.showinfo('Exito','El vehículo ha sido registrado')
+                    self.destroy()
+                    entrada_de_vehiculo().mainloop
+                else:
+                    messagebox.showinfo('Cancelado','No se ha registrado el vehículo')
+        
+    def btn_cancelar(self):
+        ask=messagebox.askquestion("Cancelar","¿Desea cancelar?\nSe perderán los cambios")
+        if ask=='yes':
+            self.destroy()
+            menu_principal().mainloop()
+        else:
+            messagebox.showinfo("Cancelar","No se ha cancelado")
+                
+menu_principal().mainloop()
