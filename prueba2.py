@@ -1,7 +1,12 @@
-from pickle import *
+dato=[0,0,0,1,0,0,0,0,0]
+f=False
 
-f=open('prueba.dat','r')
-line=f.read()
-f.close()
-lista=eval(line)
-print(lista)
+for i in range(len(dato)):
+    if dato[i]==1:
+        f=True
+        break
+if f==False:
+    print('No hay vehiculos')
+else:
+    print('Hay vehiculos')
+

@@ -52,10 +52,10 @@ class menu_principal(tkinter.Tk):
         self.btn_5 = Button(self, text="Entrada de vehículo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.entrada_de_vehiculo)
         self.btn_5.place(x=posx2, y=125)
 
-        self.btn_6 = Button(self, text="Cajero del Parqueo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
+        self.btn_6 = Button(self, text="Cajero del Parqueo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.cajero_del_parqueo)
         self.btn_6.place(x=posx2, y=200)
 
-        self.btn_7 = Button(self, text="Salida de vehiculo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
+        self.btn_7 = Button(self, text="Salida de vehiculo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.salida_de_vehiculo)
         self.btn_7.place(x=posx1, y=275)
 
         self.btn_6 = Button(self, text="Ayuda",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.abrir_ayuda)
@@ -75,6 +75,16 @@ class menu_principal(tkinter.Tk):
         self.destroy()
         self.entrada_de_vehiculo = entrada_de_vehiculo()
         self.entrada_de_vehiculo.mainloop()
+
+    def cajero_del_parqueo(self):
+        self.destroy()
+        self.cajero_del_parqueo = cajero_del_parqueo()
+        self.cajero_del_parqueo.mainloop()
+
+    def salida_de_vehiculo(self):
+        self.destroy()
+        self.salida_de_vehiculo = salida_de_vehiculo()
+        self.salida_de_vehiculo.mainloop()
 
     def abrir_ayuda(self):
         os.startfile('p3.pdf')
@@ -186,11 +196,21 @@ class configuracion(tkinter.Tk):
         else:
             try :
                 self.espacios = int(self.espacios)
-                if self.espacios < 1:
-                    messagebox.showerror("Error", "La cantidad de espacios debe ser mayor a 0")
-                subres.append(self.espacios)
+                fk=open('parqueo.dat','r')
+                parqueo=fk.read()
+                fk.close()
+                parqueo=eval(parqueo)
+                if len (parqueo)>0:
+                    messagebox.showerror("Error","Existen vehiculos en el parqueo")
+                    return
+                else:
+                    if self.espacios < 1:
+                        messagebox.showerror("Error", "La cantidad de espacios debe ser mayor a 0")
+                        return
+                    subres.append(self.espacios)        
             except ValueError:
                 messagebox.showerror("Error", "La cantidad de espacios debe ser un número")
+                return
 
         self.pphora = self.pph.get()
         if self.pphora=='':
@@ -200,9 +220,11 @@ class configuracion(tkinter.Tk):
                 self.pphora = int(self.pphora)
                 if self.pphora < 1:
                     messagebox.showerror("Error", "El pago por hora debe ser mayor a 0")
+                    return
                 subres.append(self.pphora)
             except ValueError:
                 messagebox.showerror("Error", "El pago por hora debe ser un número")
+                return
 
         self.pago_min = self.pag_min.get()
         if self.pago_min=='':
@@ -212,9 +234,11 @@ class configuracion(tkinter.Tk):
                 self.pago_min = int(self.pago_min)
                 if self.pago_min < 1:
                     messagebox.showerror("Error", "El pago mínimo debe ser mayor a 0")
+                    return
                 subres.append(self.pago_min)
             except ValueError:
                 messagebox.showerror("Error", "El pago mínimo debe ser un número")
+                return
 
         self.email = self.correo.get()
         if self.email=='':
@@ -222,10 +246,12 @@ class configuracion(tkinter.Tk):
         else:
             if validate_email(self.email)==False:
                 messagebox.showerror("Error", "El correo no es válido")
+                return
             else:
                 subres.append(self.email)
         
         self.minsmaximo = self.minsmax.get()
+
         if self.minsmaximo=='':
             subres.append(0)
         else:
@@ -233,11 +259,14 @@ class configuracion(tkinter.Tk):
                 self.minsmaximo = int(self.minsmaximo)
                 if self.minsmaximo < 0:
                     messagebox.showerror("Error", "El máximo de minutos debe ser mayor a 0")
-                subres.append(datetime.strptime(str(self.minsmaximo), '%M'))
+                    return
+                subres.append(self.minsmaximo)
             except ValueError:
                 messagebox.showerror("Error", "El máximo de minutos debe ser un número")
+                return
         
         self.moneda1 = self.m1.get()
+
         if self.moneda1=='':
             subres.append(0)
         else:
@@ -351,6 +380,7 @@ class configuracion(tkinter.Tk):
                 messagebox.showerror("Error", "La denominación de billete 4 debe ser un número")
         
         self.billete5 = self.b5.get()
+
         if self.billete5=='':
             subres.append(0)
         else:
@@ -375,14 +405,15 @@ class configuracion(tkinter.Tk):
 
         g=[]
         #Se comparan las listas y se crea una nueva lista con los nuevos valores
+
         for n_i,i in enumerate(conf):
             if subres[n_i]==0 or subres[n_i]=='':
-                g.append(str(i))
+                g.append(i)
             else:
                 if i!=subres[n_i]:
-                   g.append(str(subres[n_i]))
+                   g.append(subres[n_i])
                 else:
-                   g.append(str(i))
+                   g.append(i)
         
         print(g)
         #se crea un mensaje para confirmar la configuracion
@@ -402,6 +433,7 @@ class configuracion(tkinter.Tk):
         self.destroy()
         self.principal=menu_principal()
         self.principal.mainloop()
+
 class cargar_cajero(tkinter.Tk):
     def __init__(self):
         Tk.__init__(self)
@@ -435,14 +467,14 @@ class cargar_cajero(tkinter.Tk):
         f.close()
         conf=eval(line)
 
-        self.txtmoneda1=conf[5]
-        self.txtmoneda2=conf[6]
-        self.txtmoneda3=conf[7]
-        self.txtbillet1=conf[8]
-        self.txtbillet2=conf[9]
-        self.txtbillet3=conf[10]
-        self.txtbillet4=conf[11]
-        self.txtbillet5=conf[12]
+        self.txtmoneda1=str(conf[5])
+        self.txtmoneda2=str(conf[6])
+        self.txtmoneda3=str(conf[7])
+        self.txtbillet1=str(conf[8])
+        self.txtbillet2=str(conf[9])
+        self.txtbillet3=str(conf[10])
+        self.txtbillet4=str(conf[11])
+        self.txtbillet5=str(conf[12])
 
         fi=open('cajero.dat','r')
         salact=fi.read()
@@ -515,7 +547,7 @@ class cargar_cajero(tkinter.Tk):
         #Moneda 1
         ##############
 
-        self.l12 = tkinter.Label(self, text='Monedas de '+self.txtmoneda1, font=fo, bg='white')
+        self.l12 = tkinter.Label(self, text='Monedas de '+str(self.txtmoneda1), font=fo, bg='white')
         self.l12.place(x=col1, y=fila3)
 
         self.l13 = tkinter.Label(self, text=self.cantmoneda1, font=fo, bg='white')
@@ -526,7 +558,7 @@ class cargar_cajero(tkinter.Tk):
         self.l14 = tkinter.Label(self, text=str(self.totalm1), font=fo, bg='white')
         self.l14.place(x=col3, y=fila3)
         
-        self.ent_m1=Entry(self, width=10, font=fo, bg='white')
+        self.ent_m1=Entry(self, width=10, font=fo, bg='white',relief='solid')
         self.ent_m1.place(x=col4, y=fila3)
         
         self.total_carga_m1 = tkinter.Label(self, text=0, font=fo, bg='white')
@@ -555,7 +587,7 @@ class cargar_cajero(tkinter.Tk):
         self.l17 = tkinter.Label(self, text=str(self.totalm2), font=fo, bg='white')
         self.l17.place(x=col3, y=fila4)
 
-        self.ent_m2=Entry(self, width=10, font=fo, bg='white')
+        self.ent_m2=Entry(self, width=10, font=fo, bg='white',relief='solid')
         self.ent_m2.place(x=col4, y=fila4)
 
         self.total_carga_m2 = tkinter.Label(self, text=0, font=fo, bg='white')
@@ -584,7 +616,7 @@ class cargar_cajero(tkinter.Tk):
         self.l20 = tkinter.Label(self, text=str(self.totalm3), font=fo, bg='white')
         self.l20.place(x=col3, y=fila5)
 
-        self.ent_m3=Entry(self, width=10,font=fo, bg='white')
+        self.ent_m3=Entry(self, width=10,font=fo, bg='white',relief='solid')
         self.ent_m3.place(x=col4, y=fila5)
 
         self.total_carga_m3 = tkinter.Label(self,text=0 ,font=fo, bg='white')
@@ -639,7 +671,7 @@ class cargar_cajero(tkinter.Tk):
         self.l26 = tkinter.Label(self, text=str(self.totalb1), font=fo, bg='white')
         self.l26.place(x=col3, y=fila7)
 
-        self.ent_b1=Entry(self, width=10, font=fo, bg='white')
+        self.ent_b1=Entry(self, width=10, font=fo, bg='white',relief='solid')
         self.ent_b1.place(x=col4, y=fila7)
 
         self.total_carga_b1 = tkinter.Label(self, text=0, font=fo, bg='white')
@@ -668,7 +700,7 @@ class cargar_cajero(tkinter.Tk):
         self.l29 = tkinter.Label(self, text=str(self.totalb2), font=fo, bg='white')
         self.l29.place(x=col3, y=fila8)
 
-        self.ent_b2=Entry(self, width=10, font=fo, bg='white')
+        self.ent_b2=Entry(self, width=10, font=fo, bg='white',relief='solid')
         self.ent_b2.place(x=col4, y=fila8)
 
         self.total_carga_b2 = tkinter.Label(self, text=0, font=fo, bg='white')
@@ -697,7 +729,7 @@ class cargar_cajero(tkinter.Tk):
         self.l32 = tkinter.Label(self, text=str(self.totalb3), font=fo, bg='white')
         self.l32.place(x=col3, y=fila9)
 
-        self.ent_b3=Entry(self, width=10, font=fo, bg='white')
+        self.ent_b3=Entry(self, width=10, font=fo, bg='white',relief='solid')
         self.ent_b3.place(x=col4, y=fila9)
 
         self.total_carga_b3 = tkinter.Label(self, text=0, font=fo, bg='white')
@@ -726,7 +758,7 @@ class cargar_cajero(tkinter.Tk):
         self.l35 = tkinter.Label(self, text=str(self.totalb4), font=fo, bg='white')
         self.l35.place(x=col3, y=fila10)
 
-        self.ent_b4=Entry(self, width=10, font=fo, bg='white')
+        self.ent_b4=Entry(self, width=10, font=fo, bg='white',relief='solid')
         self.ent_b4.place(x=col4, y=fila10)
 
         self.total_carga_b4 = tkinter.Label(self, text=0, font=fo, bg='white')
@@ -755,7 +787,7 @@ class cargar_cajero(tkinter.Tk):
         self.l38 = tkinter.Label(self, text=str(self.totalb5), font=fo, bg='white')
         self.l38.place(x=col3, y=fila11)
 
-        self.ent_b5=Entry(self, width=10, font=fo, bg='white')
+        self.ent_b5=Entry(self, width=10, font=fo, bg='white',relief='solid')
         self.ent_b5.place(x=col4, y=fila11)
 
         self.total_carga_b5 = tkinter.Label(self, text=0, font=fo, bg='white')
@@ -1154,7 +1186,7 @@ class entrada_de_vehiculo(tkinter.Tk):
         self.l4=tkinter.Label(self,text='Su Placa',font=fo)
         self.l4.place(x=col1,y=fila2)
 
-        self.ent_placa=tkinter.Entry(self,width=10,font=fo)
+        self.ent_placa=tkinter.Entry(self,width=10,font=fo,relief='solid')
         self.ent_placa.place(x=col2,y=fila2)
 
         self.l5=tkinter.Label(self,text='Campo Asignado',font=fo)
@@ -1204,6 +1236,9 @@ class entrada_de_vehiculo(tkinter.Tk):
 
     def btn_ok(self):
         placa=self.ent_placa.get()
+        if self.total_espacios==0:
+            messagebox.showinfo("Error","No hay espacios disponibles")
+            return
         if placa=='':
             messagebox.showinfo('Error','No ha ingresado la placa')
         else:
@@ -1228,11 +1263,544 @@ class entrada_de_vehiculo(tkinter.Tk):
                     messagebox.showinfo('Cancelado','No se ha registrado el vehículo')
         
     def btn_cancelar(self):
-        ask=messagebox.askquestion("Cancelar","¿Desea cancelar?\nSe perderán los cambios")
-        if ask=='yes':
+        if self.ent_placa.get()=='':
             self.destroy()
             menu_principal().mainloop()
         else:
-            messagebox.showinfo("Cancelar","No se ha cancelado")
+            ask=messagebox.askquestion("Cancelar","¿Desea cancelar?\nSe perderán los cambios")
+            if ask=='yes':
+                self.destroy()
+                menu_principal().mainloop()
+            else:
+                messagebox.showinfo("Cancelar","No se ha cancelado")
+class cajero_del_parqueo(tkinter.Tk):
+    def __init__(self):
+        #Se inicializa la ventana
+        tkinter.Tk.__init__(self)
+        self.title('Parqueo-Cajero del Parqueo')
+        self.geometry('615x650')
+        self.resizable(False,False)
+        self.iconbitmap('dolar.ico')
+        #Se cargan los datos de la configuración
+        fk=open('configuracion.dat','r')
+        self.config=fk.read()
+        fk.close()
+        self.config=eval(self.config)
+        #Se cargan los datos del parqueo
+        fk=open('parqueo.dat','r')
+        self.parqueo=fk.read()
+        fk.close()
+        self.parqueo=eval(self.parqueo)
+        #Se cargan los datos del cajero
+        fk=open('cajero.dat','r')
+        self.cajero=fk.read()
+        fk.close()
+        self.cajero=eval(self.cajero)
+
+        #Se crean laas variables de posicionamiento
+        fo=('Arial',12)
+        col1=10
+        col2=200
+        col3=270
+        col4=350
+        col5=500
+        fila1=10
+        fila2=70
+        fila3=100
+        fila4=130
+        fila5=160
+        fila6=210
+        fila7=240
+        fila8=270
+        fila9=300
+        fila10=330
+        fila11=360
+        fila12=410
+        fila13=440
+        fila14=470
+        fila15=500
+        fila16=530
+        fila17=560
+        fila18=590
+
+        self.pago=[0,0,0,0,0,0,0,0]
+        self.b_m_cambio=[0,0,0,0,0,0,0,0]
+
+        ############################
+        #Labels y entradas de paso 1
+        #############################
+
+        self.l1=tkinter.Label(self,text='Cajero del Parqueo',font=('Arial',20,'bold'))
+        self.l1.place(x=150,y=fila1)
+
+        txtpph=str(self.config[1])+' por hora'
+        
+        self.l2=tkinter.Label(self,text=txtpph,font=fo)
+        self.l2.place(x=col5,y=fila1+10)
+
+        self.l3=tkinter.Label(self,text='Paso 1: Su placa',font=fo)
+        self.l3.place(x=col1,y=fila2)
+
+        self.ent_placa=tkinter.Entry(self,width=10,font=fo,relief='solid')
+        self.ent_placa.place(x=col2,y=fila2)
+        self.ent_placa.bind('<KeyRelease>',self.validar_placa)
+
+        self.l4=tkinter.Label(self,text='Hora de entrada',font=fo)
+        self.l4.place(x=col1,y=fila3)
+
+        self.lab_hora_entrada=Label(self,text=0,font=fo)
+        self.lab_hora_entrada.place(x=col2,y=fila3)
+
+        self.l5=tkinter.Label(self,text='Hora de salida',font=fo)
+        self.l5.place(x=col1,y=fila4)
+
+        self.hora_salida=datetime.datetime.now().strftime('%H:%M %d/%m/%Y')
+
+        self.lab_hora_salida=Label(self,text=self.hora_salida,font=fo)
+        self.lab_hora_salida.place(x=col2,y=fila4)
+
+        self.l6=tkinter.Label(self,text='Tiempo cobrado',font=fo)
+        self.l6.place(x=col1,y=fila5)
+
+        self.lab_tiempo_cobrado=Label(self,text=0,font=fo)
+        self.lab_tiempo_cobrado.place(x=col2,y=fila5)
+
+        self.l7=tkinter.Label(self,text='Total a pagar',font=fo)
+        self.l7.place(x=col5,y=fila2)
+
+        self.lab_total_pagar=Label(self,text=0,font=fo,bg='RoyalBlue2',fg='white',height=3,width=10)
+        self.lab_total_pagar.place(x=col5,y=fila3)
+
+        ####################
+        #Labels del paso 2
+        ####################
+
+        self.l8=tkinter.Label(self,text='Paso 2: Su pago en',font=fo)
+        self.l8.place(x=col1,y=fila6)
+
+        self.l9=tkinter.Label(self,text='Monedas',font=fo)
+        self.l9.place(x=col2-30,y=fila6)
+
+        self.l10=tkinter.Label(self,text='Billetes',font=fo)
+        self.l10.place(x=col3,y=fila6)
+
+        self.l11=tkinter.Label(self,text='Tarjeta de crédito',font=fo)
+        self.l11.place(x=col4,y=fila6)
+
+        self.tarjeta=tkinter.Entry(self,width=11,font=fo,relief='solid')
+        self.tarjeta.place(x=col4,y=fila7)
+
+        self.l12=tkinter.Label(self,text='Pagado',font=fo)
+        self.l12.place(x=col5,y=fila6)
+
+        self.lab_pagado=Label(self,text=0,font=fo,bg='RoyalBlue2',fg='white',height=2,width=10)
+        self.lab_pagado.place(x=col5,y=fila7)
+
+        self.l13=tkinter.Label(self,text='Cambio',font=fo)
+        self.l13.place(x=col5,y=fila8+20)
+
+        ###############################
+        #Botones de monedas y billetes
+        ###############################
+
+        self.lab_cambio=Label(self,text=0,font=fo,bg='RoyalBlue2',fg='white',height=2,width=10)
+        self.lab_cambio.place(x=col5,y=fila9+20)
+
+        self.btn_moneda1=tkinter.Button(self,text=self.config[5],font=fo,command=self.btn_moneda1)
+        self.btn_moneda1.place(x=col2-30,y=fila7)
+
+        self.btn_moneda2=tkinter.Button(self,text=self.config[6],font=fo,command=self.btn_moneda2)
+        self.btn_moneda2.place(x=col2-30,y=fila9)
+
+        self.btn_moneda3=tkinter.Button(self,text=self.config[7],font=fo,command=self.btn_moneda3)
+        self.btn_moneda3.place(x=col2-30,y=fila11)
+
+        self.btn_billetes1=tkinter.Button(self,text=self.config[8],font=fo,command=self.btn_billete1)
+        self.btn_billetes1.place(x=col3,y=fila7)
+
+        self.btn_billetes2=tkinter.Button(self,text=self.config[9],font=fo,command=self.btn_billete2)
+        self.btn_billetes2.place(x=col3,y=fila8)
+
+        self.btn_billetes3=tkinter.Button(self,text=self.config[10],font=fo,command=self.btn_billete3)
+        self.btn_billetes3.place(x=col3,y=fila9)
+
+        self.btn_billetes4=tkinter.Button(self,text=self.config[11],font=fo,command=self.btn_billete4)
+        self.btn_billetes4.place(x=col3,y=fila10)
+
+        self.btn_billetes5=tkinter.Button(self,text=self.config[12],font=fo,command=self.btn_billete5)
+        self.btn_billetes5.place(x=col3,y=fila11)
+
+        ###############################
+        #Labels del paso 3
+        ###############################
+
+        self.l14=tkinter.Label(self,text='Paso 3: Su cambio en',font=fo)
+        self.l14.place(x=col1,y=fila12)
+
+        self.l15=tkinter.Label(self,text='Monedas',font=fo)
+        self.l15.place(x=col2-30,y=fila12)
+
+        self.l16=tkinter.Label(self,text='Billetes',font=fo)
+        self.l16.place(x=col3,y=fila12)
+
+        self.cam_m1=Label(self,text='0 De '+str(self.config[5]),font=fo)
+        self.cam_m1.place(x=col2-30,y=fila13)
+
+        self.cam_m2=Label(self,text='0 De '+str(self.config[6]),font=fo)
+        self.cam_m2.place(x=col2-30,y=fila14)
+
+        self.cam_m3=Label(self,text='0 De '+str(self.config[7]),font=fo)
+        self.cam_m3.place(x=col2-30,y=fila15)
+
+        self.cam_b1=Label(self,text='0 De '+str(self.config[8]),font=fo)
+        self.cam_b1.place(x=col3,y=fila13)
+
+        self.cam_b2=Label(self,text='0 De '+str(self.config[9]),font=fo)
+        self.cam_b2.place(x=col3,y=fila14)
+
+        self.cam_b3=Label(self,text='0 De '+str(self.config[10]),font=fo)
+        self.cam_b3.place(x=col3,y=fila15)
+
+        self.cam_b4=Label(self,text='0 De '+str(self.config[11]),font=fo)
+        self.cam_b4.place(x=col3,y=fila16)
+
+        self.cam_b5=Label(self,text='0 De '+str(self.config[12]),font=fo)
+        self.cam_b5.place(x=col3,y=fila17)
+
+        ###############################
+        #Boton
+        ###############################
+
+        self.btn_anular=tkinter.Button(self,text='Anular el Pago',font=fo,bg='blue2',fg='white',height=2,width=12,command=self.btn_anular)
+        self.btn_anular.place(x=col1,y=fila18)
+
+    def validar_placa(self,event):
+        placa=self.ent_placa.get()
+
+        for i in self.parqueo.values():
+            if placa in i:
+                if i[2]!=0:
+                    messagebox.showinfo('Error','El auto ya pagó')
+                    break
+                else:
+                    self.auto_select=i
+                    self.hora_entrada=i[1]
+                    self.lab_hora_entrada.config(text=self.hora_entrada)
+                    #se obtiene la diferencia de horas entrada y salida
+                    hora_entrada=datetime.datetime.strptime(self.hora_entrada,'%H:%M %d/%m/%Y')
+                    hora_salida=datetime.datetime.strptime(self.hora_salida,'%H:%M %d/%m/%Y')
+                    diferencia=hora_salida-hora_entrada
+                    self.lab_tiempo_cobrado.config(text=str(diferencia))
+                    #se obtiene el total a pagar
+                    if ((diferencia.seconds//60)//60)!=0:
+                        if ((diferencia.seconds//60)%60)!=0:
+                            self.total_a_pagar=int(((((diferencia.seconds//60)//60))*self.config[1])+self.config[2])
+                        else:
+                            self.total_a_pagar=int((((diferencia.seconds//60)//60)*self.config[1]))
+                    else:
+                        self.total_a_pagar=self.config[2]
+                    self.lab_total_pagar.config(text=str(self.total_a_pagar))
+                    self.lab_cambio.config(text=str(0-self.total_a_pagar))
+                    break     
+            else:
+                self.lab_hora_entrada.config(text=0)
+                self.lab_tiempo_cobrado.config(text=0)
+                self.lab_total_pagar.config(text=0)
+                self.lab_cambio.config(text=0)
+
+    def btn_moneda1(self):
+        self.total_pagar=int(self.lab_total_pagar.cget('text'))
+        if self.total_pagar>0:
+            subtotal=int(self.lab_pagado.cget('text'))+self.config[5]
+            self.lab_pagado.config(text=str(subtotal))
+            subcambio=int(self.lab_cambio.cget('text'))
+            self.lab_cambio.config(text=str(subcambio+self.config[5]))
+            self.pago[0]+=1
+            if subtotal>=self.total_pagar:
+                self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+        else:
+            messagebox.showinfo('Error','Ingrese una placa')
+
+    def btn_moneda2(self):
+        self.total_pagar=int(self.lab_total_pagar.cget('text'))
+        if self.total_pagar>0:
+            subtotal=int(self.lab_pagado.cget('text'))+self.config[6]
+            self.lab_pagado.config(text=str(subtotal))
+            subcambio=int(self.lab_cambio.cget('text'))
+            self.lab_cambio.config(text=str(subcambio+self.config[6]))
+            self.pago[1]+=1
+            if subtotal>=self.total_pagar:
+                self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+        else:
+            messagebox.showinfo('Error','Ingrese una placa')
+
+    def btn_moneda3(self):
+        self.total_pagar=int(self.lab_total_pagar.cget('text'))
+        if self.total_pagar>0:
+            subtotal=int(self.lab_pagado.cget('text'))+self.config[7]
+            self.lab_pagado.config(text=str(subtotal))
+            subcambio=int(self.lab_cambio.cget('text'))
+            self.lab_cambio.config(text=str(subcambio+self.config[7]))
+            self.pago[2]+=1
+            if subtotal>=self.total_pagar:
+                self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+        else:
+            messagebox.showinfo('Error','Ingrese una placa')
+
+    def btn_billete1(self):
+        self.total_pagar=int(self.lab_total_pagar.cget('text'))
+        if self.total_pagar>0:
+            subtotal=int(self.lab_pagado.cget('text'))+self.config[8]
+            self.lab_pagado.config(text=str(subtotal))
+            subcambio=int(self.lab_cambio.cget('text'))
+            self.lab_cambio.config(text=str(subcambio+self.config[8]))
+            self.pago[3]+=1
+            if subtotal>=self.total_pagar:
+                self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+        else:
+            messagebox.showinfo('Error','Ingrese una placa')
+
+    def btn_billete2(self):
+        self.total_pagar=int(self.lab_total_pagar.cget('text'))
+        if self.total_pagar>0:
+            subtotal=int(self.lab_pagado.cget('text'))+self.config[9]
+            self.lab_pagado.config(text=str(subtotal))
+            subcambio=int(self.lab_cambio.cget('text'))
+            self.lab_cambio.config(text=str(subcambio+self.config[9]))
+            self.pago[4]+=1
+            if subtotal>=self.total_pagar:
+                self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+        else:
+            messagebox.showinfo('Error','Ingrese una placa')
+
+    def btn_billete3(self):
+        self.total_pagar=int(self.lab_total_pagar.cget('text'))
+        if self.total_pagar>0:
+            subtotal=int(self.lab_pagado.cget('text'))+self.config[10]
+            self.lab_pagado.config(text=str(subtotal))
+            subcambio=int(self.lab_cambio.cget('text'))
+            self.lab_cambio.config(text=str(subcambio+self.config[10]))
+            self.pago[5]+=1
+            if subtotal>=self.total_pagar:
+                self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+        else:
+            messagebox.showinfo('Error','Ingrese una placa')
+
+    def btn_billete4(self):
+        self.total_pagar=int(self.lab_total_pagar.cget('text'))
+        if self.total_pagar>0:
+            subtotal=int(self.lab_pagado.cget('text'))+self.config[11]
+            self.lab_pagado.config(text=str(subtotal))
+            subcambio=int(self.lab_cambio.cget('text'))
+            self.lab_cambio.config(text=str(subcambio+self.config[11]))
+            self.pago[6]+=1
+            if subtotal>=self.total_pagar:
+                self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+        else:
+            messagebox.showinfo('Error','Ingrese una placa')
+
+    def btn_billete5(self):
+        self.total_pagar=int(self.lab_total_pagar.cget('text'))
+        if self.total_pagar>0:
+            subtotal=int(self.lab_pagado.cget('text'))+self.config[12]
+            self.lab_pagado.config(text=str(subtotal))
+            subcambio=int(self.lab_cambio.cget('text'))
+            self.lab_cambio.config(text=str(subcambio+self.config[12]))
+            self.pago[7]+=1
+            if subtotal>=self.total_pagar:
+                self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+        else:
+            messagebox.showinfo('Error','Ingrese una placa')
+
+    def cambio(self):
+        tot_cambio=int(self.lab_cambio.cget('text'))
+        if tot_cambio>0:
+            if self.config[12]!=0:
+                if tot_cambio>=self.config[12]:
+                    cambio_b5=tot_cambio//self.config[12]
+                    if cambio_b5>self.cajero[7]:
+                        cambio_b5=self.cajero[7]
+                    tot_cambio-=cambio_b5*self.config[12]
+                    self.b_m_cambio[7]+=cambio_b5
+            if self.config[11]!=0:
+                if tot_cambio>=self.config[11]:
+                    cambio_b4=tot_cambio//self.config[11]
+                    if cambio_b4>self.cajero[6]:
+                        cambio_b4=self.cajero[6]
+                    tot_cambio-=cambio_b4*self.config[11]
+                    self.b_m_cambio[6]+=cambio_b4
+            if self.config[10]!=0:
+                if tot_cambio>=self.config[10]:
+                    cambio_b3=tot_cambio//self.config[10]
+                    if cambio_b3>self.cajero[5]:
+                        cambio_b3=self.cajero[5]
+                    tot_cambio-=cambio_b3*self.config[10]
+                    self.b_m_cambio[5]+=cambio_b3
+            if self.config[9]!=0:
+                if tot_cambio>=self.config[9]:
+                    cambio_b2=tot_cambio//self.config[9]
+                    if cambio_b2>self.cajero[4]:
+                        cambio_b2=self.cajero[4]
+                    tot_cambio-=cambio_b2*self.config[9]
+                    self.b_m_cambio[4]+=cambio_b2
+            if self.config[8]!=0:
+                if tot_cambio>=self.config[8]:
+                    cambio_b1=tot_cambio//self.config[8]
+                    if cambio_b1>self.cajero[3]:
+                        cambio_b1=self.cajero[3]
+                    tot_cambio-=cambio_b1*self.config[8]
+                    self.b_m_cambio[3]+=cambio_b1
+            
+            if self.config[7]!=0:
+                if tot_cambio>=self.config[7]:
+                    cambio_m3=tot_cambio//self.config[7]
+                    if cambio_m3>self.cajero[2]:
+                        cambio_m3=self.cajero[2]
+                    tot_cambio-=cambio_m3*self.config[7]
+                    self.b_m_cambio[2]+=cambio_m3
+            if self.config[6]!=0:
+                if tot_cambio>=self.config[6]:
+                    cambio_m2=tot_cambio//self.config[6]
+                    if cambio_m2>self.cajero[1]:
+                        cambio_m2=self.cajero[1]
+                    tot_cambio-=cambio_m2*self.config[6]
+                    self.b_m_cambio[1]+=cambio_m2
+            if self.config[5]!=0:
+                if tot_cambio>=self.config[5]:
+                    cambio_m1=tot_cambio//self.config[5]
+                    if cambio_m1>self.cajero[0]:
+                        cambio_m1=self.cajero[0]
+                    tot_cambio-=cambio_m1*self.config[5]
+                    self.b_m_cambio[0]+=cambio_m1
+
+            if tot_cambio!=0:
+                messagebox.showinfo('Error','No hay suficiente cambio')
+            else:
+                self.cam_b5.config(text=str(self.b_m_cambio[7])+' De '+str(self.config[12]))
+                self.cam_b4.config(text=str(self.b_m_cambio[6])+' De '+str(self.config[11]))
+                self.cam_b3.config(text=str(self.b_m_cambio[5])+' De '+str(self.config[10]))
+                self.cam_b2.config(text=str(self.b_m_cambio[4])+' De '+str(self.config[9]))
+                self.cam_b1.config(text=str(self.b_m_cambio[3])+' De '+str(self.config[8]))
+                self.cam_m3.config(text=str(self.b_m_cambio[2])+' De '+str(self.config[7]))
+                self.cam_m2.config(text=str(self.b_m_cambio[1])+' De '+str(self.config[6]))
+                self.cam_m1.config(text=str(self.b_m_cambio[0])+' De '+str(self.config[5]))
+                messagebox.showinfo('Cambio','Cambio: '+str(self.lab_cambio.cget('text'))+'\nGracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
+                for i in range(len(self.cajero)):
+                    self.cajero[i]+=self.pago[i]
+                    self.cajero[i]-=self.b_m_cambio[i]
                 
+                fk=open('cajero.dat','w')
+                fk.write(str(self.cajero))
+                fk.close()
+                a_pagar=self.auto_select[3]
+                a_pagar+=self.total_a_pagar
+                newdato=[self.auto_select[0],self.auto_select[1],self.hora_salida,a_pagar,0,self.auto_select[5]]
+
+                self.parqueo[self.auto_select[5]]=newdato
+
+                fk=open('parqueo.dat','w')
+                fk.write(str(self.parqueo))
+                fk.close()
+
+    def btn_anular(self):
+        ask=messagebox.askquestion('Anular','¿Esta seguro de anular el pago?')
+        if ask=='yes':
+            messagebox.showinfo('Anulado','Pago anulado')
+            self.destroy()
+            mp=menu_principal()
+            mp.mainloop()
+class salida_de_vehiculo(tkinter.Tk):
+    def __init__(self):
+        tkinter.Tk.__init__(self)
+        self.title('Parqueo-Salida de Vehiculo')
+        self.geometry('500x175')
+        self.resizable(0,0)
+        self.iconbitmap('icon.ico')
+
+        fk=open('configuracion.dat','r')
+        self.config=eval(fk.read())
+        fk.close()
+
+        fk=open('parqueo.dat','r')
+        self.parqueo=eval(fk.read())
+        fk.close()
+
+        self.l1=tkinter.Label(self,text='Salida de vehículo',font=('Arial',20,'bold'))
+        self.l1.place(x=125,y=10)
+
+        self.l2=tkinter.Label(self,text='Placa:',font=('Arial',14))
+        self.l2.place(x=50,y=60)
+
+        self.ent_placa=tkinter.Entry(self,width=10,font=('Arial',14),relief='solid')
+        self.ent_placa.place(x=140,y=60)
+
+        self.btn_salida=tkinter.Button(self,text='Ok',command=self.btn_salida,bg='blue2',fg='white',width=7,font=('Arial',14))
+        self.btn_salida.place(x=50,y=110)
+
+        self.btn_cancelar=tkinter.Button(self,text='Cancelar',command=self.btn_cancelar,bg='blue2',fg='white',width=7,font=('Arial',14))
+        self.btn_cancelar.place(x=200,y=110)
+
+
+    def btn_salida(self):
+        placa=self.ent_placa.get()
+        if placa=='':
+            messagebox.showinfo('Error','Ingrese la placa')
+        else:
+            for pos_i,i in enumerate(self.parqueo.values()):
+                if i[0]==placa:
+                    if i[3]==0:
+                        messagebox.showinfo('Error','El vehículo no ha pagado')
+                        return
+                    else:
+                        hora_pago=datetime.datetime.strptime(i[2],'%H:%M %d/%m/%Y')
+                        hora_salida=datetime.datetime.now().strftime('%H:%M %d/%m/%Y')
+                        hora_salida=datetime.datetime.strptime(hora_salida,'%H:%M %d/%m/%Y')
+                        dif_tiempo=hora_salida-hora_pago
+                        if dif_tiempo.seconds%60 > 0 or dif_tiempo.seconds//60>self.config[4]:
+                            messagebox.showinfo('Error','Tiempo de salida excedido\nDebe regresar a pagar la diferencia')
+                            self.parqueo[pos_i+1][1]=datetime.datetime.now().strftime('%H:%M %d/%m/%Y')
+                            self.parqueo[pos_i+1][2]=0
+                            fk=open('parqueo.dat','w')
+                            fk.write(str(self.parqueo))
+                            fk.close()
+                            return
+                        else:
+                            del self.parqueo[i[5]]
+                            print(self.parqueo)
+                            fk=open('parqueo.dat','w')
+                            fk.write(str(self.parqueo))
+                            fk.close()
+                        messagebox.showinfo('Salida','Gracias por su visita')
+                        return
+            messagebox.showinfo('Salida','El vehículo no está registrado')
+
+    def btn_cancelar(self):
+        self.destroy()
+        mp=menu_principal()
+        mp.mainloop()
+
 menu_principal().mainloop()
