@@ -185,10 +185,22 @@ class configuracion(tkinter.Tk):
         self.cancelar.place(x=275, y=500)
 
     def guardar(self):
-
+        #Se crea la variable para guardar la configuración
         subres=[]
+        #Se crean estas variables para verificar que las denominaciones existan y van en orden adecuado
         monedas=[5,10,25,50,100,500]
         billetes=[1000,2000,5000,10000,20000]
+
+        #Se verifica que el cajero este vacio
+        fk=open('cajero.dat','r')
+        cajero=eval(fk.read())
+        fk.close()
+
+        cajero_lleno=False
+        for i in cajero:
+            if i>0:
+                cajero_lleno=True
+                break
 
         self.espacios = self.esp.get()
         if self.espacios=='':
@@ -266,10 +278,12 @@ class configuracion(tkinter.Tk):
                 return
         
         self.moneda1 = self.m1.get()
-
         if self.moneda1=='':
             subres.append(0)
         else:
+            if cajero_lleno==True:
+                messagebox.showerror("Error", "El cajero debe estar vacío para cambiar la denominación")
+                return
             try :
                 self.moneda1 = int(self.moneda1)
                 if self.moneda1 not in monedas:
@@ -284,6 +298,9 @@ class configuracion(tkinter.Tk):
         if self.moneda2=='':
             subres.append(0)
         else:
+            if cajero_lleno==True:
+                messagebox.showerror("Error", "El cajero debe estar vacío para cambiar la denominación")
+                return
             try :
                 self.moneda2 = int(self.moneda2)
                 if self.moneda2 not in monedas:
@@ -301,6 +318,9 @@ class configuracion(tkinter.Tk):
         if self.moneda3=='':
             subres.append(0)
         else:
+            if cajero_lleno==True:
+                messagebox.showerror("Error", "El cajero debe estar vacío para cambiar la denominación")
+                return
             try :
                 self.moneda3 = int(self.moneda3)
                 if self.moneda3 not in monedas:
@@ -318,6 +338,9 @@ class configuracion(tkinter.Tk):
         if self.billete1=='':
             subres.append(0)
         else:
+            if cajero_lleno==True:
+                messagebox.showerror("Error", "El cajero debe estar vacío para cambiar la denominación")
+                return
             try :
                 self.billete1 = int(self.billete1)
                 if self.billete1 not in billetes:
@@ -331,6 +354,9 @@ class configuracion(tkinter.Tk):
         if self.billete2=='':
             subres.append(0)
         else:
+            if cajero_lleno==True:
+                messagebox.showerror("Error", "El cajero debe estar vacío para cambiar la denominación")
+                return
             try :
                 self.billete2 = int(self.billete2)
                 if self.billete2 not in billetes:
@@ -349,6 +375,9 @@ class configuracion(tkinter.Tk):
         if self.billete3=='':
             subres.append(0)
         else:
+            if cajero_lleno==True:
+                messagebox.showerror("Error", "El cajero debe estar vacío para cambiar la denominación")
+                return
             try :
                 self.billete3 = int(self.billete3)
                 if self.billete3 not in billetes:
@@ -366,6 +395,9 @@ class configuracion(tkinter.Tk):
         if self.billete4=='':
             subres.append(0)
         else:
+            if cajero_lleno==True:
+                messagebox.showerror("Error", "El cajero debe estar vacío para cambiar la denominación")
+                return
             try :
                 self.billete4 = int(self.billete4)
                 if self.billete4 not in billetes:
@@ -384,6 +416,9 @@ class configuracion(tkinter.Tk):
         if self.billete5=='':
             subres.append(0)
         else:
+            if cajero_lleno==True:
+                messagebox.showerror("Error", "El cajero debe estar vacío para cambiar la denominación")
+                return
             try :
                 self.billete5 = int(self.billete5)
                 if self.billete5 not in billetes:
@@ -414,8 +449,15 @@ class configuracion(tkinter.Tk):
                    g.append(subres[n_i])
                 else:
                    g.append(i)
-        
-        print(g)
+
+        for n_i,i in enumerate(g):
+            if n_i>5 and n_i<8:
+                if i<=g[n_i-1] or g[n_i-1]==0:
+                    g[n_i]=0
+
+            elif n_i>8:
+                if i<=g[n_i-1] or g[n_i-1]==0:
+                    g[n_i]=0
         #se crea un mensaje para confirmar la configuracion
         ask= messagebox.askquestion("Confirmar", "¿Está seguro de que desea guardar la configuración?")
         if ask=='yes':
@@ -430,9 +472,23 @@ class configuracion(tkinter.Tk):
             messagebox.showinfo("Atención", "La configuración no se ha guardado")
 
     def salir(self):
-        self.destroy()
-        self.principal=menu_principal()
-        self.principal.mainloop()
+        entradas=[self.esp.get(),self.pph.get(),self.pag_min.get(),self.correo.get(),self.minsmax.get(),self.m1.get(),self.m2.get(),self.m3.get(),self.b1.get(),self.b2.get(),self.b3.get(),self.b4.get(),self.b5.get()]
+        cambio=False
+        print(entradas)
+        for i in entradas:
+            if i=='':
+                cambio=True
+                break
+        if cambio==True:
+            ask= messagebox.askquestion("Confirmar", "¿Está seguro de que desea salir?")
+            if ask=='yes':
+                self.destroy()
+                self.principal=menu_principal()
+                self.principal.mainloop()
+        else:
+            self.destroy()
+            self.principal=menu_principal()
+            self.principal.mainloop()
 
 class cargar_cajero(tkinter.Tk):
     def __init__(self):
@@ -861,8 +917,10 @@ class cargar_cajero(tkinter.Tk):
         if ent=='':#Si la caja de texto esta vacia
             ent=0#Asignamos 0
         try:
+            if int(self.txtmoneda1)==0:#Si el valor de la denominación de moneda 1 es 0
+                self.ent_m1.delete(0,END)#Borramos el contenido de la caja de texto
+                return
             ent=int(ent)#Convertimos a entero
-            tc=ent
             self.total_carga_m1.config(text=(ent*int(self.txtmoneda1)))#Mostramos el total de la carga
             cant_m1=ent+int(self.cantmoneda1)#Total de monedas
             self.cant_tot_m1.config(text=str(cant_m1))#Mostramos la cantidad total
@@ -893,6 +951,9 @@ class cargar_cajero(tkinter.Tk):
         if ent=='':
             ent=0
         try:
+            if int(self.txtmoneda2)==0:
+                self.ent_m2.delete(0,END)
+                return
             ent=int(ent)
             self.total_carga_m2.config(text=(ent*int(self.txtmoneda2)))
             cant_m2=ent+int(self.cantmoneda2)
@@ -919,6 +980,9 @@ class cargar_cajero(tkinter.Tk):
         if ent=='':
             ent=0
         try:
+            if int(self.txtmoneda3)==0:
+                self.ent_m3.delete(0,END)
+                return
             ent=int(ent)
             self.total_carga_m3.config(text=(ent*int(self.txtmoneda3)))
             cant_m3=ent+int(self.cantmoneda3)
@@ -949,6 +1013,9 @@ class cargar_cajero(tkinter.Tk):
         if ent=='':
             ent=0
         try:
+            if int(self.txtbillet1)==0:
+                self.ent_b1.delete(0,END)
+                return
             ent=int(ent)
             self.total_carga_b1.config(text=(ent*int(self.txtbillet1)))
             cant_b1=ent+int(self.cantbillet1)
@@ -981,6 +1048,9 @@ class cargar_cajero(tkinter.Tk):
         if ent=='':
             ent=0
         try:
+            if int(self.txtbillet2)==0:
+                self.ent_b2.delete(0,END)
+                return
             ent=int(ent)
             self.total_carga_b2.config(text=(ent*int(self.txtbillet2)))
             cant_b2=ent+int(self.cantbillet2)
@@ -1013,6 +1083,9 @@ class cargar_cajero(tkinter.Tk):
         if ent=='':
             ent=0
         try:
+            if int(self.txtbillet3)==0:
+                self.ent_b3.delete(0,END)
+                return
             ent=int(ent)
             self.total_carga_b3.config(text=(ent*int(self.txtbillet3)))
             cant_b3=ent+int(self.cantbillet3)
@@ -1045,6 +1118,9 @@ class cargar_cajero(tkinter.Tk):
         if ent=='':
             ent=0
         try:
+            if int(self.txtbillet4)==0:
+                self.ent_b4.delete(0,END)
+                return
             ent=int(ent)
             self.total_carga_b4.config(text=(ent*int(self.txtbillet4)))
             cant_b4=ent+int(self.cantbillet4)
@@ -1077,6 +1153,9 @@ class cargar_cajero(tkinter.Tk):
         if ent=='':
             ent=0
         try:
+            if int(self.txtbillet5)==0:
+                self.ent_b5.delete(0,END)
+                return
             ent=int(ent)
             self.total_carga_b5.config(text=(ent*int(self.txtbillet5)))
             cant_b5=ent+int(self.cantbillet5)
@@ -1310,12 +1389,12 @@ class cajero_del_parqueo(tkinter.Tk):
         fila4=130
         fila5=160
         fila6=210
-        fila7=240
-        fila8=270
-        fila9=300
-        fila10=330
-        fila11=360
-        fila12=410
+        fila7=245
+        fila8=280
+        fila9=315
+        fila10=350
+        fila11=385
+        fila12=420
         fila13=440
         fila14=470
         fila15=500
@@ -1406,28 +1485,28 @@ class cajero_del_parqueo(tkinter.Tk):
         self.lab_cambio=Label(self,text=0,font=fo,bg='RoyalBlue2',fg='white',height=2,width=10)
         self.lab_cambio.place(x=col5,y=fila9+20)
 
-        self.btn_moneda1=tkinter.Button(self,text=self.config[5],font=fo,command=self.btn_moneda1)
+        self.btn_moneda1=tkinter.Button(self,text=self.config[5],font=fo,command=self.btn_moneda1,width=5,bg='blue2',fg='white')
         self.btn_moneda1.place(x=col2-30,y=fila7)
 
-        self.btn_moneda2=tkinter.Button(self,text=self.config[6],font=fo,command=self.btn_moneda2)
+        self.btn_moneda2=tkinter.Button(self,text=self.config[6],font=fo,command=self.btn_moneda2,width=5,bg='blue2',fg='white')
         self.btn_moneda2.place(x=col2-30,y=fila9)
 
-        self.btn_moneda3=tkinter.Button(self,text=self.config[7],font=fo,command=self.btn_moneda3)
+        self.btn_moneda3=tkinter.Button(self,text=self.config[7],font=fo,command=self.btn_moneda3,width=5,bg='blue2',fg='white')
         self.btn_moneda3.place(x=col2-30,y=fila11)
 
-        self.btn_billetes1=tkinter.Button(self,text=self.config[8],font=fo,command=self.btn_billete1)
+        self.btn_billetes1=tkinter.Button(self,text=self.config[8],font=fo,command=self.btn_billete1,width=5,bg='blue2',fg='white')
         self.btn_billetes1.place(x=col3,y=fila7)
 
-        self.btn_billetes2=tkinter.Button(self,text=self.config[9],font=fo,command=self.btn_billete2)
+        self.btn_billetes2=tkinter.Button(self,text=self.config[9],font=fo,command=self.btn_billete2,width=5,bg='blue2',fg='white')
         self.btn_billetes2.place(x=col3,y=fila8)
 
-        self.btn_billetes3=tkinter.Button(self,text=self.config[10],font=fo,command=self.btn_billete3)
+        self.btn_billetes3=tkinter.Button(self,text=self.config[10],font=fo,command=self.btn_billete3,width=5,bg='blue2',fg='white')
         self.btn_billetes3.place(x=col3,y=fila9)
 
-        self.btn_billetes4=tkinter.Button(self,text=self.config[11],font=fo,command=self.btn_billete4)
+        self.btn_billetes4=tkinter.Button(self,text=self.config[11],font=fo,command=self.btn_billete4,width=5,bg='blue2',fg='white')
         self.btn_billetes4.place(x=col3,y=fila10)
 
-        self.btn_billetes5=tkinter.Button(self,text=self.config[12],font=fo,command=self.btn_billete5)
+        self.btn_billetes5=tkinter.Button(self,text=self.config[12],font=fo,command=self.btn_billete5,width=5,bg='blue2',fg='white')
         self.btn_billetes5.place(x=col3,y=fila11)
 
         ###############################
@@ -1516,8 +1595,14 @@ class cajero_del_parqueo(tkinter.Tk):
             subcambio=int(self.lab_cambio.cget('text'))
             self.lab_cambio.config(text=str(subcambio+self.config[5]))
             self.pago[0]+=1
-            if subtotal>=self.total_pagar:
+            if subtotal>self.total_pagar:
                 self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+            elif subtotal==self.total_pagar:
+                self.sin_cambio()
+                messagebox.showinfo('Cajero','Gracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
                 self.destroy()
                 mp=menu_principal()
                 mp.mainloop()
@@ -1532,8 +1617,14 @@ class cajero_del_parqueo(tkinter.Tk):
             subcambio=int(self.lab_cambio.cget('text'))
             self.lab_cambio.config(text=str(subcambio+self.config[6]))
             self.pago[1]+=1
-            if subtotal>=self.total_pagar:
+            if subtotal>self.total_pagar:
                 self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+            elif subtotal==self.total_pagar:
+                self.sin_cambio()
+                messagebox.showinfo('Cajero','Gracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
                 self.destroy()
                 mp=menu_principal()
                 mp.mainloop()
@@ -1548,8 +1639,14 @@ class cajero_del_parqueo(tkinter.Tk):
             subcambio=int(self.lab_cambio.cget('text'))
             self.lab_cambio.config(text=str(subcambio+self.config[7]))
             self.pago[2]+=1
-            if subtotal>=self.total_pagar:
+            if subtotal>self.total_pagar:
                 self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+            elif subtotal==self.total_pagar:
+                self.sin_cambio()
+                messagebox.showinfo('Cajero','Gracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
                 self.destroy()
                 mp=menu_principal()
                 mp.mainloop()
@@ -1564,8 +1661,14 @@ class cajero_del_parqueo(tkinter.Tk):
             subcambio=int(self.lab_cambio.cget('text'))
             self.lab_cambio.config(text=str(subcambio+self.config[8]))
             self.pago[3]+=1
-            if subtotal>=self.total_pagar:
+            if subtotal>self.total_pagar:
                 self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+            elif subtotal==self.total_pagar:
+                self.sin_cambio()
+                messagebox.showinfo('Cajero','Gracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
                 self.destroy()
                 mp=menu_principal()
                 mp.mainloop()
@@ -1580,8 +1683,14 @@ class cajero_del_parqueo(tkinter.Tk):
             subcambio=int(self.lab_cambio.cget('text'))
             self.lab_cambio.config(text=str(subcambio+self.config[9]))
             self.pago[4]+=1
-            if subtotal>=self.total_pagar:
+            if subtotal>self.total_pagar:
                 self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+            elif subtotal==self.total_pagar:
+                self.sin_cambio()
+                messagebox.showinfo('Cajero','Gracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
                 self.destroy()
                 mp=menu_principal()
                 mp.mainloop()
@@ -1596,8 +1705,14 @@ class cajero_del_parqueo(tkinter.Tk):
             subcambio=int(self.lab_cambio.cget('text'))
             self.lab_cambio.config(text=str(subcambio+self.config[10]))
             self.pago[5]+=1
-            if subtotal>=self.total_pagar:
+            if subtotal>self.total_pagar:
                 self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+            elif subtotal==self.total_pagar:
+                self.sin_cambio()
+                messagebox.showinfo('Cajero','Gracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
                 self.destroy()
                 mp=menu_principal()
                 mp.mainloop()
@@ -1612,8 +1727,14 @@ class cajero_del_parqueo(tkinter.Tk):
             subcambio=int(self.lab_cambio.cget('text'))
             self.lab_cambio.config(text=str(subcambio+self.config[11]))
             self.pago[6]+=1
-            if subtotal>=self.total_pagar:
+            if subtotal>self.total_pagar:
                 self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+            elif subtotal==self.total_pagar:
+                self.sin_cambio()
+                messagebox.showinfo('Cajero','Gracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
                 self.destroy()
                 mp=menu_principal()
                 mp.mainloop()
@@ -1628,13 +1749,40 @@ class cajero_del_parqueo(tkinter.Tk):
             subcambio=int(self.lab_cambio.cget('text'))
             self.lab_cambio.config(text=str(subcambio+self.config[12]))
             self.pago[7]+=1
-            if subtotal>=self.total_pagar:
+            if subtotal>self.total_pagar:
                 self.cambio()
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+            elif subtotal==self.total_pagar:
+                self.sin_cambio()
+                messagebox.showinfo('Cajero','Gracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
                 self.destroy()
                 mp=menu_principal()
                 mp.mainloop()
         else:
             messagebox.showinfo('Error','Ingrese una placa')
+
+    def sin_cambio(self):
+        for i in range(len(self.cajero)):
+            self.cajero[i]+=self.pago[i]
+            self.cajero[i]-=self.b_m_cambio[i]
+                
+
+
+        fk=open('cajero.dat','w')
+        fk.write(str(self.cajero))
+        fk.close()
+        a_pagar=self.auto_select[3]
+        a_pagar+=self.total_a_pagar
+        newdato=[self.auto_select[0],self.auto_select[1],self.hora_salida,a_pagar,0,self.auto_select[5]]
+
+        self.parqueo[self.auto_select[5]]=newdato
+
+        fk=open('parqueo.dat','w')
+        fk.write(str(self.parqueo))
+        fk.close()
+
 
     def cambio(self):
         tot_cambio=int(self.lab_cambio.cget('text'))
@@ -1713,6 +1861,8 @@ class cajero_del_parqueo(tkinter.Tk):
                     self.cajero[i]+=self.pago[i]
                     self.cajero[i]-=self.b_m_cambio[i]
                 
+
+
                 fk=open('cajero.dat','w')
                 fk.write(str(self.cajero))
                 fk.close()
@@ -1782,7 +1932,7 @@ class salida_de_vehiculo(tkinter.Tk):
                         dif_tiempo=hora_salida-hora_pago
                         if dif_tiempo.seconds%60 > 0 or dif_tiempo.seconds//60>self.config[4]:
                             messagebox.showinfo('Error','Tiempo de salida excedido\nDebe regresar a pagar la diferencia')
-                            self.parqueo[pos_i+1][1]=datetime.datetime.now().strftime('%H:%M %d/%m/%Y')
+                            self.parqueo[pos_i+1][1]=self.parqueo[pos_i+1][2]
                             self.parqueo[pos_i+1][2]=0
                             fk=open('parqueo.dat','w')
                             fk.write(str(self.parqueo))
