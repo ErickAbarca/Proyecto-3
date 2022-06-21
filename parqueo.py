@@ -8,10 +8,12 @@ Estudiante: Erick Abarca Calderon
 Profesor: William Mata Rodriguez
 '''
 
+from cmath import sin
 from tkinter import *
 import tkinter
 from tkinter import messagebox
 from pickle import *
+from pyparsing import col
 from validate_email import validate_email
 import datetime
 import os
@@ -43,10 +45,10 @@ class menu_principal(tkinter.Tk):
         self.btn_2 = Button(self, text="Cargar Cajero",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.abrir_cargar_cajero)
         self.btn_2.place(x=posx1, y=125)
 
-        self.btn_3 = Button(self, text="Saldo del Cajero",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
+        self.btn_3 = Button(self, text="Saldo del Cajero",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.saldo_del_cajero)
         self.btn_3.place(x=posx1, y=200)
 
-        self.btn_4 = Button(self, text="Ingresos de dinero",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font))
+        self.btn_4 = Button(self, text="Ingresos de dinero",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.abrir_ingresos_de_dinero)
         self.btn_4.place(x=posx2, y=50)
         
         self.btn_5 = Button(self, text="Entrada de vehículo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.entrada_de_vehiculo)
@@ -85,6 +87,16 @@ class menu_principal(tkinter.Tk):
         self.destroy()
         self.salida_de_vehiculo = salida_de_vehiculo()
         self.salida_de_vehiculo.mainloop()
+    
+    def saldo_del_cajero(self):
+        self.destroy()
+        self.saldo_del_cajero = saldo_del_cajero()
+        self.saldo_del_cajero.mainloop()
+
+    def abrir_ingresos_de_dinero(self):
+        self.destroy()
+        self.ingresos_de_dinero = ingresos_de_dinero()
+        self.ingresos_de_dinero.mainloop()
 
     def abrir_ayuda(self):
         os.startfile('p3.pdf')
@@ -489,7 +501,6 @@ class configuracion(tkinter.Tk):
             self.destroy()
             self.principal=menu_principal()
             self.principal.mainloop()
-
 class cargar_cajero(tkinter.Tk):
     def __init__(self):
         Tk.__init__(self)
@@ -559,6 +570,8 @@ class cargar_cajero(tkinter.Tk):
         #Variables que se usan para guardar los valores en el arvhivo al final
         self.subres=[self.cantmoneda1,self.cantmoneda2,self.cantmoneda3,self.cantbillet1,self.cantbillet2,self.cantbillet3,self.cantbillet4,self.cantbillet5]
 
+        #Variable para definir cuanto dinero se ha cargado
+        self.total_entrada=[0,0,0,0,0,0,0,0]
 
         self.title("Parqueo-Cargar Cajero")
         self.geometry("900x550")
@@ -941,6 +954,7 @@ class cargar_cajero(tkinter.Tk):
             self.sald_cant_tot_m.config(text=str(int(self.cant_tot_m1.cget('text'))+int(self.cant_tot_m2.cget('text'))+int(self.cant_tot_m3.cget('text'))))
             self.sald_tot_m.config(text=str(int(self.tot_fin_m1.cget('text'))+int(self.tot_fin_m2.cget('text'))+int(self.tot_fin_m3.cget('text'))))
             self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))#Se calcula el total final del cajero
+            self.total_entrada[0]=ent#Se asigna el valor a la lista de entradas
         except:
             self.ent_m1.delete(0,END)#si no es un número se borra el contenido de la caja de texto
         
@@ -972,6 +986,7 @@ class cargar_cajero(tkinter.Tk):
             self.sald_cant_tot_m.config(text=str(int(self.cant_tot_m1.cget('text'))+int(self.cant_tot_m2.cget('text'))+int(self.cant_tot_m3.cget('text'))))
             self.sald_tot_m.config(text=str(int(self.tot_fin_m1.cget('text'))+int(self.tot_fin_m2.cget('text'))+int(self.tot_fin_m3.cget('text'))))
             self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
+            self.total_entrada[1]=ent
         except:
             self.ent_m2.delete(0,END)
 
@@ -1001,6 +1016,7 @@ class cargar_cajero(tkinter.Tk):
             self.sald_cant_tot_m.config(text=str(int(self.cant_tot_m1.cget('text'))+int(self.cant_tot_m2.cget('text'))+int(self.cant_tot_m3.cget('text'))))
             self.sald_tot_m.config(text=str(int(self.tot_fin_m1.cget('text'))+int(self.tot_fin_m2.cget('text'))+int(self.tot_fin_m3.cget('text'))))
             self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
+            self.total_entrada[2]=ent
         except:
             self.ent_m3.delete(0,END)
 
@@ -1040,6 +1056,7 @@ class cargar_cajero(tkinter.Tk):
             self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
             self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
             self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
+            self.total_entrada[3]=ent
         except:
             self.ent_b1.delete(0,END)
 
@@ -1075,6 +1092,7 @@ class cargar_cajero(tkinter.Tk):
             self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
             self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
             self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
+            self.total_entrada[4]=ent
         except:
             self.ent_b2.delete(0,END)
 
@@ -1110,6 +1128,7 @@ class cargar_cajero(tkinter.Tk):
             self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
             self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
             self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
+            self.total_entrada[5]=ent
         except:
             self.ent_b3.delete(0,END)
 
@@ -1145,6 +1164,7 @@ class cargar_cajero(tkinter.Tk):
             self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
             self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
             self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
+            self.total_entrada[6]=ent
         except:
             self.ent_b4.delete(0,END)
 
@@ -1180,6 +1200,7 @@ class cargar_cajero(tkinter.Tk):
             self.sald_cant_tot_b.config(text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))))
             self.sald_tot_b.config(text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))))
             self.total_final.config(text=str(int(self.sald_tot_b.cget('text'))+int(self.sald_tot_m.cget('text'))))
+            self.total_entrada[7]=ent
         except:
             self.ent_b5.delete(0,END)
 
@@ -1192,6 +1213,14 @@ class cargar_cajero(tkinter.Tk):
         if ask=='yes':
             fk=open('cajero.dat','w')
             fk.write(str(self.subres))
+            fk.close()
+            fk=open('ent_sal.dat','r')
+            ent_sal=eval(fk.read())
+            fk.close()
+            for n_i, i in enumerate(self.total_entrada):
+                ent_sal[0][n_i]+=self.total_entrada[n_i]
+            fk=open('ent_sal.dat','w')
+            fk.write(str(ent_sal))
             fk.close()
             messagebox.showinfo("Guardar","Se han guardado los cambios")
             self.destroy()
@@ -1375,6 +1404,10 @@ class cajero_del_parqueo(tkinter.Tk):
         self.cajero=fk.read()
         fk.close()
         self.cajero=eval(self.cajero)
+        #Se cargan los datos del detalle de uso
+        fk=open('detalle_uso.dat','r')
+        self.detalle_uso=eval(fk.read())
+        fk.close()
 
         #Se crean laas variables de posicionamiento
         fo=('Arial',12)
@@ -1468,6 +1501,7 @@ class cajero_del_parqueo(tkinter.Tk):
 
         self.tarjeta=tkinter.Entry(self,width=11,font=fo,relief='solid')
         self.tarjeta.place(x=col4,y=fila7)
+        self.tarjeta.bind('<KeyRelease>',self.pago_tarjeta)
 
         self.l12=tkinter.Label(self,text='Pagado',font=fo)
         self.l12.place(x=col5,y=fila6)
@@ -1573,9 +1607,9 @@ class cajero_del_parqueo(tkinter.Tk):
                     #se obtiene el total a pagar
                     if ((diferencia.seconds//60)//60)!=0:
                         if ((diferencia.seconds//60)%60)!=0:
-                            self.total_a_pagar=int(((((diferencia.seconds//60)//60))*self.config[1])+self.config[2])
+                            self.total_a_pagar=int((((((diferencia.seconds//60)//60))*self.config[1])+self.config[2])+((diferencia.days*24)*self.config[1]))
                         else:
-                            self.total_a_pagar=int((((diferencia.seconds//60)//60)*self.config[1]))
+                            self.total_a_pagar=int((((diferencia.seconds//60)//60)*self.config[1])+((diferencia.days*24)*self.config[1]))
                     else:
                         self.total_a_pagar=self.config[2]
                     self.lab_total_pagar.config(text=str(self.total_a_pagar))
@@ -1763,6 +1797,39 @@ class cajero_del_parqueo(tkinter.Tk):
         else:
             messagebox.showinfo('Error','Ingrese una placa')
 
+    def pago_tarjeta(self,event):
+        ent=self.tarjeta.get()
+        pago=int(self.lab_total_pagar.cget('text'))
+        if pago>0:
+            if len(ent)==10:
+                messagebox.showinfo('Pago','Pago realizado con tarjeta\nGracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
+
+                self.detalle_uso.append([datetime.datetime.now().strftime('%d/%m/%Y'),self.total_a_pagar,1])
+
+                a_pagar=self.auto_select[3]
+                a_pagar+=self.total_a_pagar
+                newdato=[self.auto_select[0],self.auto_select[1],self.hora_salida,a_pagar,0,self.auto_select[5]]
+
+                self.parqueo[self.auto_select[5]]=newdato
+
+                fk=open('parqueo.dat','w')
+                fk.write(str(self.parqueo))
+                fk.close()
+
+                fk=open('detalle_uso.dat','w')
+                fk.write(str(self.detalle_uso))
+                fk.close()
+
+                self.destroy()
+                mp=menu_principal()
+                mp.mainloop()
+
+                
+        else:
+            messagebox.showinfo('Error','Ingrese una placa')
+            self.tarjeta.delete(0,END)
+
+
     def sin_cambio(self):
         for i in range(len(self.cajero)):
             self.cajero[i]+=self.pago[i]
@@ -1779,10 +1846,26 @@ class cajero_del_parqueo(tkinter.Tk):
 
         self.parqueo[self.auto_select[5]]=newdato
 
+        self.detalle_uso.append([datetime.datetime.now().strftime('%d/%m/%Y'),self.total_a_pagar,0])
+
         fk=open('parqueo.dat','w')
         fk.write(str(self.parqueo))
         fk.close()
 
+        fk=open('ent_sal.dat','r')
+        ent_sal=eval(fk.read())
+        fk.close()
+
+        for n_i, i in enumerate(self.pago):
+            ent_sal[0][n_i]+=i
+
+        fk=open('ent_sal.dat','w')
+        fk.write(str(ent_sal))
+        fk.close()
+
+        fk=open('detalle_uso.dat','w')
+        fk.write(str(self.detalle_uso))
+        fk.close()
 
     def cambio(self):
         tot_cambio=int(self.lab_cambio.cget('text'))
@@ -1872,8 +1955,26 @@ class cajero_del_parqueo(tkinter.Tk):
 
                 self.parqueo[self.auto_select[5]]=newdato
 
+                self.detalle_uso.append([datetime.datetime.now().strftime('%d/%m/%Y'),self.total_a_pagar,0])
+
                 fk=open('parqueo.dat','w')
                 fk.write(str(self.parqueo))
+                fk.close()
+
+                fk=open('ent_sal.dat','r')
+                ent_sal=eval(fk.read())
+                fk.close()
+
+                for n_i, i in enumerate(self.pago):
+                    ent_sal[0][n_i]+=i
+                    ent_sal[1][n_i]+=self.b_m_cambio[n_i]
+
+                fk=open('ent_sal.dat','w')
+                fk.write(str(ent_sal))
+                fk.close()
+
+                fk=open('detalle_uso.dat','w')
+                fk.write(str(self.detalle_uso))
                 fk.close()
 
     def btn_anular(self):
@@ -1945,12 +2046,511 @@ class salida_de_vehiculo(tkinter.Tk):
                             fk.write(str(self.parqueo))
                             fk.close()
                         messagebox.showinfo('Salida','Gracias por su visita')
-                        return
+                        self.destroy()
+                        mp=menu_principal()
+                        mp.mainloop()
             messagebox.showinfo('Salida','El vehículo no está registrado')
 
     def btn_cancelar(self):
         self.destroy()
         mp=menu_principal()
         mp.mainloop()
+class saldo_del_cajero(tkinter.Tk):
+    def __init__(self):
+        tkinter.Tk.__init__(self)
+        self.title('Parqueo-Saldo del Cajero')
+        self.geometry('900x550')
+        self.resizable(0,0)
+        self.iconbitmap('dolar.ico')
+
+        fk=open('configuracion.dat','r')
+        config=eval(fk.read())
+        fk.close()
+
+        fk=open('ent_sal.dat','r')
+        ent_sal=eval(fk.read())
+        fk.close()
+
+        tema=1
+
+        if tema==0:
+            fondo='white'
+            col_let='black'
+        else:
+            fondo='gray17'
+            col_let='white'
+
+        self.config(bg=fondo)
+
+        fo=("Arial", 12)
+        fila1=50
+        fila2=80
+        fila3=110
+        fila4=140
+        fila5=170
+        fila6=200
+        fila7=240
+        fila8=270
+        fila9=300
+        fila10=330
+        fila11=360
+        fila12=390
+        fila13=430
+        fila14=470
+
+        col1=10
+        col2=230
+        col3=310
+        col4=530
+        col5=605
+        col6=725
+        col7=810
+
+        self.txtmoneda1=str(config[5])
+        self.txtmoneda2=str(config[6])
+        self.txtmoneda3=str(config[7])
+        self.txtbillet1=str(config[8])
+        self.txtbillet2=str(config[9])
+        self.txtbillet3=str(config[10])
+        self.txtbillet4=str(config[11])
+        self.txtbillet5=str(config[12])
+
+        ###################
+        #Labels de titulos
+        ###################
+
+        self.l1=tkinter.Label(self,text='Saldo del cajero',font=('Arial',20,'bold'),bg=fondo, fg=col_let)
+        self.l1.place(x=350,y=10)
+
+        self.l2 = tkinter.Label(self, text="Denominación", font=fo, bg=fondo, fg=col_let)
+        self.l2.place(x=10, y=fila2)
+
+        self.l3 = tkinter.Label(self, text="Entradas", font=fo, bg=fondo, fg=col_let)
+        self.l3.place(x=250, y=fila1)
+
+        self.l4 = tkinter.Label(self, text="Salidas", font=fo, bg=fondo, fg=col_let)
+        self.l4.place(x=550, y=fila1)
+
+        self.l5 = tkinter.Label(self, text="Saldo", font=fo, bg=fondo, fg=col_let)
+        self.l5.place(x=750, y=fila1)
+
+        self.l6 = tkinter.Label(self, text="Cantidad", font=fo, bg=fondo, fg=col_let)
+        self.l6.place(x=200, y=fila2)
+
+        self.l7 = tkinter.Label(self, text="Total", font=fo, bg=fondo, fg=col_let)
+        self.l7.place(x=300, y=fila2)
+
+        self.l8 = tkinter.Label(self, text="Cantidad", font=fo, bg=fondo, fg=col_let)
+        self.l8.place(x=500, y=fila2)
+
+        self.l9 = tkinter.Label(self, text="Total", font=fo, bg=fondo, fg=col_let)
+        self.l9.place(x=600, y=fila2)
+
+        self.l10 = tkinter.Label(self, text="Cantidad", font=fo, bg=fondo, fg=col_let)
+        self.l10.place(x=700, y=fila2)
+
+        self.l11 = tkinter.Label(self, text="Total", font=fo, bg=fondo, fg=col_let)
+        self.l11.place(x=800, y=fila2)
+
+        ##############
+        #Moneda 1
+        ##############
+
+        #Denominació7
+        self.l12 = tkinter.Label(self, text='Monedas de '+str(self.txtmoneda1), font=fo, bg=fondo, fg= col_let)
+        self.l12.place(x=col1, y=fila3)
+        #Entradas
+        self.l13 = tkinter.Label(self, text=ent_sal[0][0], font=fo, bg=fondo, fg= col_let)
+        self.l13.place(x=col2, y=fila3)
+        self.l14 = tkinter.Label(self, text=str(ent_sal[0][0]*int(self.txtmoneda1)), font=fo, bg=fondo, fg= col_let)
+        self.l14.place(x=col3, y=fila3)
+        #Salidas
+        self.l15=Label(self, text=str(ent_sal[1][0]), font=fo,bg=fondo, fg= col_let)
+        self.l15.place(x=col4, y=fila3)
+        self.l16 = tkinter.Label(self, text=str(ent_sal[1][0]*int(self.txtmoneda1)), font=fo, bg=fondo, fg= col_let)
+        self.l16.place(x=col5, y=fila3)
+        #Saldo
+        self.cant_tot_m1 = tkinter.Label(self, text=str(ent_sal[0][0]-ent_sal[1][0]), font=fo, bg=fondo, fg= col_let)
+        self.cant_tot_m1.place(x=col6, y=fila3)
+        self.tot_fin_m1 = tkinter.Label(self, text=str((ent_sal[0][0]-ent_sal[1][0])*int(self.txtmoneda1)), font=fo, bg=fondo, fg= col_let)
+        self.tot_fin_m1.place(x=col7, y=fila3)
+
+        #################
+        #Moneda 2
+        #################
+
+        #Denominació8
+        self.l17 = tkinter.Label(self, text='Monedas de '+str(self.txtmoneda2), font=fo, bg=fondo, fg= col_let)
+        self.l17.place(x=col1, y=fila4)
+        #Entradas
+        self.l18 = tkinter.Label(self, text=ent_sal[0][1], font=fo, bg=fondo, fg= col_let)
+        self.l18.place(x=col2, y=fila4)
+        self.l19 = tkinter.Label(self, text=str(ent_sal[0][1]*int(self.txtmoneda2)), font=fo, bg=fondo, fg= col_let)
+        self.l19.place(x=col3, y=fila4)
+        #Salidas
+        self.l20 = tkinter.Label(self, text=str(ent_sal[1][1]), font=fo, bg=fondo, fg= col_let)
+        self.l20.place(x=col4, y=fila4)
+        self.l21 = tkinter.Label(self, text=str(ent_sal[1][1]*int(self.txtmoneda2)), font=fo, bg=fondo, fg= col_let)
+        self.l21.place(x=col5, y=fila4)
+        #Saldo
+        self.cant_tot_m2 = tkinter.Label(self, text=str(ent_sal[0][1]-ent_sal[1][1]), font=fo, bg=fondo, fg= col_let)
+        self.cant_tot_m2.place(x=col6, y=fila4)
+        self.tot_fin_m2 = tkinter.Label(self, text=str((ent_sal[0][1]-ent_sal[1][1])*int(self.txtmoneda2)), font=fo, bg=fondo, fg= col_let)
+        self.tot_fin_m2.place(x=col7, y=fila4)
+
+        #################
+        #Moneda 3
+        #################
+
+        #Denominació9
+        self.l22 = tkinter.Label(self, text='Monedas de '+str(self.txtmoneda3), font=fo, bg=fondo, fg= col_let)
+        self.l22.place(x=col1, y=fila5)
+        #Entradas
+        self.l23 = tkinter.Label(self, text=ent_sal[0][2], font=fo, bg=fondo, fg= col_let)
+        self.l23.place(x=col2, y=fila5)
+        self.l24 = tkinter.Label(self, text=str(ent_sal[0][2]*int(self.txtmoneda3)), font=fo, bg=fondo, fg= col_let)
+        self.l24.place(x=col3, y=fila5)
+        #Salidas
+        self.l25 = tkinter.Label(self, text=str(ent_sal[1][2]), font=fo, bg=fondo, fg= col_let)
+        self.l25.place(x=col4, y=fila5)
+        self.l26 = tkinter.Label(self, text=str(ent_sal[1][2]*int(self.txtmoneda3)), font=fo, bg=fondo, fg= col_let)
+        self.l26.place(x=col5, y=fila5)
+        #Saldo
+        self.cant_tot_m3 = tkinter.Label(self, text=str(ent_sal[0][2]-ent_sal[1][2]), font=fo, bg=fondo, fg= col_let)
+        self.cant_tot_m3.place(x=col6, y=fila5)
+        self.tot_fin_m3 = tkinter.Label(self, text=str((ent_sal[0][2]-ent_sal[1][2])*int(self.txtmoneda3)), font=fo, bg=fondo, fg= col_let)
+        self.tot_fin_m3.place(x=col7, y=fila5)
+
+        #################
+        #Total de monedas
+        #################
+
+        self.sl22 = tkinter.Label(self, text='Total de Monedas', font=fo, bg=fondo, fg= col_let)
+        self.sl22.place(x=col1, y=fila6)
+        #Entradas
+        self.sl23 = tkinter.Label(self, text=str(ent_sal[0][0]+ent_sal[0][1]+ent_sal[0][2]), font=fo, bg=fondo, fg= col_let)
+        self.sl23.place(x=col2, y=fila6)
+        self.sl24 = tkinter.Label(self, text=str((((ent_sal[0][0])*int(self.txtmoneda1))+((ent_sal[0][1])*int(self.txtmoneda2))+((ent_sal[0][2])*int(self.txtmoneda3)))), font=fo, bg=fondo, fg= col_let)
+        self.sl24.place(x=col3, y=fila6)
+        #Salidas
+        self.sl25 = tkinter.Label(self, text=str(ent_sal[1][0]+ent_sal[1][1]+ent_sal[1][2]), font=fo, bg=fondo, fg= col_let)
+        self.sl25.place(x=col4, y=fila6)
+        self.sl26 = tkinter.Label(self, text=str((((ent_sal[1][0])*int(self.txtmoneda1))+((ent_sal[1][1])*int(self.txtmoneda2))+((ent_sal[1][2])*int(self.txtmoneda3)))), font=fo, bg=fondo, fg= col_let)
+        self.sl26.place(x=col5, y=fila6)
+        #Saldo
+        self.sl27 = tkinter.Label(self, text=str(int(self.cant_tot_m1.cget('text'))+int(self.cant_tot_m2.cget('text'))+int(self.cant_tot_m3.cget('text'))), font=fo, bg=fondo, fg= col_let)
+        self.sl27.place(x=col6, y=fila6)
+        self.sl28 = tkinter.Label(self, text=str((int(self.tot_fin_m1.cget('text'))+int(self.tot_fin_m2.cget('text'))+int(self.tot_fin_m3.cget('text')))), font=fo, bg=fondo, fg= col_let)
+        self.sl28.place(x=col7, y=fila6)
+
+        #################
+        #Billete 1
+        #################
+
+        #Denominación
+        self.l27 = tkinter.Label(self, text='Billetes de '+str(self.txtbillet1), font=fo, bg=fondo, fg= col_let)
+        self.l27.place(x=col1, y=fila7)
+        #Entradas
+        self.l28 = tkinter.Label(self, text=ent_sal[0][3], font=fo, bg=fondo, fg= col_let)
+        self.l28.place(x=col2, y=fila7)
+        self.l29 = tkinter.Label(self, text=str(ent_sal[0][3]*int(self.txtbillet1)), font=fo, bg=fondo, fg= col_let)
+        self.l29.place(x=col3, y=fila7)
+        #Salidas
+        self.l30 = tkinter.Label(self, text=str(ent_sal[1][3]), font=fo, bg=fondo, fg= col_let)
+        self.l30.place(x=col4, y=fila7)
+        self.l31 = tkinter.Label(self, text=str(ent_sal[1][3]*int(self.txtbillet1)), font=fo, bg=fondo, fg= col_let)
+        self.l31.place(x=col5, y=fila7)
+        #Saldo
+        self.cant_tot_b1 = tkinter.Label(self, text=str(ent_sal[0][3]-ent_sal[1][3]), font=fo, bg=fondo, fg= col_let)
+        self.cant_tot_b1.place(x=col6, y=fila7)
+        self.tot_fin_b1 = tkinter.Label(self, text=str((ent_sal[0][3]-ent_sal[1][3])*int(self.txtbillet1)), font=fo, bg=fondo, fg= col_let)
+        self.tot_fin_b1.place(x=col7, y=fila7)
+
+        #################
+        #Billete 2
+        #################
+
+        #Denominación
+        self.l32 = tkinter.Label(self, text='Billetes de '+str(self.txtbillet2), font=fo, bg=fondo, fg= col_let)
+        self.l32.place(x=col1, y=fila8)
+        #Entradas
+        self.l33 = tkinter.Label(self, text=ent_sal[0][4], font=fo, bg=fondo, fg= col_let)
+        self.l33.place(x=col2, y=fila8)
+        self.l34 = tkinter.Label(self, text=str(ent_sal[0][4]*int(self.txtbillet2)), font=fo, bg=fondo, fg= col_let)
+        self.l34.place(x=col3, y=fila8)
+        #Salidas
+        self.l35 = tkinter.Label(self, text=str(ent_sal[1][4]), font=fo, bg=fondo, fg= col_let)
+        self.l35.place(x=col4, y=fila8)
+        self.l36 = tkinter.Label(self, text=str(ent_sal[1][4]*int(self.txtbillet2)), font=fo, bg=fondo, fg= col_let)
+        self.l36.place(x=col5, y=fila8)
+        #Saldo
+        self.cant_tot_b2 = tkinter.Label(self, text=str(ent_sal[0][4]-ent_sal[1][4]), font=fo, bg=fondo, fg= col_let)
+        self.cant_tot_b2.place(x=col6, y=fila8)
+        self.tot_fin_b2 = tkinter.Label(self, text=str((ent_sal[0][4]-ent_sal[1][4])*int(self.txtbillet2)), font=fo, bg=fondo, fg= col_let)
+        self.tot_fin_b2.place(x=col7, y=fila8)
+
+        #################
+        #Billete 3
+        #################
+
+        #Denominación
+        self.l37 = tkinter.Label(self, text='Billetes de '+str(self.txtbillet3), font=fo, bg=fondo, fg= col_let)
+        self.l37.place(x=col1, y=fila9)
+        #Entradas
+        self.l38 = tkinter.Label(self, text=ent_sal[0][5], font=fo, bg=fondo, fg= col_let)
+        self.l38.place(x=col2, y=fila9)
+        self.l39 = tkinter.Label(self, text=str(ent_sal[0][5]*int(self.txtbillet3)), font=fo, bg=fondo, fg= col_let)
+        self.l39.place(x=col3, y=fila9)
+        #Salidas
+        self.l40 = tkinter.Label(self, text=str(ent_sal[1][5]), font=fo, bg=fondo, fg= col_let)
+        self.l40.place(x=col4, y=fila9)
+        self.l41 = tkinter.Label(self, text=str(ent_sal[1][5]*int(self.txtbillet3)), font=fo, bg=fondo, fg= col_let)
+        self.l41.place(x=col5, y=fila9)
+        #Saldo
+        self.cant_tot_b3 = tkinter.Label(self, text=str(ent_sal[0][5]-ent_sal[1][5]), font=fo, bg=fondo, fg= col_let)
+        self.cant_tot_b3.place(x=col6, y=fila9)
+        self.tot_fin_b3 = tkinter.Label(self, text=str((ent_sal[0][5]-ent_sal[1][5])*int(self.txtbillet3)), font=fo, bg=fondo, fg= col_let)
+        self.tot_fin_b3.place(x=col7, y=fila9)
+
+        #################
+        #Billete 4
+        #################
+
+        #Denominación
+        self.l42 = tkinter.Label(self, text='Billetes de '+str(self.txtbillet4), font=fo, bg=fondo, fg= col_let)
+        self.l42.place(x=col1, y=fila10)
+        #Entradas
+        self.l43 = tkinter.Label(self, text=ent_sal[0][6], font=fo, bg=fondo, fg= col_let)
+        self.l43.place(x=col2, y=fila10)
+        self.l44 = tkinter.Label(self, text=str(ent_sal[0][6]*int(self.txtbillet4)), font=fo, bg=fondo, fg= col_let)
+        self.l44.place(x=col3, y=fila10)
+        #Salidas
+        self.l45 = tkinter.Label(self, text=str(ent_sal[1][6]), font=fo, bg=fondo, fg= col_let)
+        self.l45.place(x=col4, y=fila10)
+        self.l46 = tkinter.Label(self, text=str(ent_sal[1][6]*int(self.txtbillet4)), font=fo, bg=fondo, fg= col_let)
+        self.l46.place(x=col5, y=fila10)
+        #Saldo
+        self.cant_tot_b4 = tkinter.Label(self, text=str(ent_sal[0][6]-ent_sal[1][6]), font=fo, bg=fondo, fg= col_let)
+        self.cant_tot_b4.place(x=col6, y=fila10)
+        self.tot_fin_b4 = tkinter.Label(self, text=str((ent_sal[0][6]-ent_sal[1][6])*int(self.txtbillet4)), font=fo, bg=fondo, fg= col_let)
+        self.tot_fin_b4.place(x=col7, y=fila10)
+
+        #################
+        #Billete 5
+        #################
+
+        #Denominación
+        self.l47 = tkinter.Label(self, text='Billetes de '+str(self.txtbillet5), font=fo, bg=fondo, fg= col_let)
+        self.l47.place(x=col1, y=fila11)
+        #Entradas
+        self.l48 = tkinter.Label(self, text=ent_sal[0][7], font=fo, bg=fondo, fg= col_let)
+        self.l48.place(x=col2, y=fila11)
+        self.l49 = tkinter.Label(self, text=str(ent_sal[0][7]*int(self.txtbillet5)), font=fo, bg=fondo, fg= col_let)
+        self.l49.place(x=col3, y=fila11)
+        #Salidas
+        self.l50 = tkinter.Label(self, text=str(ent_sal[1][7]), font=fo, bg=fondo, fg= col_let)
+        self.l50.place(x=col4, y=fila11)
+        self.l51 = tkinter.Label(self, text=str(ent_sal[1][7]*int(self.txtbillet5)), font=fo, bg=fondo, fg= col_let)
+        self.l51.place(x=col5, y=fila11)
+        #Saldo
+        self.cant_tot_b5 = tkinter.Label(self, text=str(ent_sal[0][7]-ent_sal[1][7]), font=fo, bg=fondo, fg= col_let)
+        self.cant_tot_b5.place(x=col6, y=fila11)
+        self.tot_fin_b5 = tkinter.Label(self, text=str((ent_sal[0][7]-ent_sal[1][7])*int(self.txtbillet5)), font=fo, bg=fondo, fg= col_let)
+        self.tot_fin_b5.place(x=col7, y=fila11)
+
+        #################
+        #Total de billetes
+        #################
+
+        #Denominación
+        self.l52 = tkinter.Label(self, text='Total de billetes', font=fo, bg=fondo, fg= col_let)
+        self.l52.place(x=col1, y=fila12)
+        #Entradas
+        self.l53 = tkinter.Label(self, text=str(ent_sal[0][3]+ent_sal[0][4]+ent_sal[0][5]+ent_sal[0][6]+ent_sal[0][7]), font=fo, bg=fondo, fg= col_let)
+        self.l53.place(x=col2, y=fila12)
+        self.l54 = tkinter.Label(self, text=str((((ent_sal[0][3])*int(self.txtbillet1))+((ent_sal[0][4])*int(self.txtbillet2))+((ent_sal[0][5])*int(self.txtbillet3))+((ent_sal[0][6])*int(self.txtbillet4))+((ent_sal[0][7])*int(self.txtbillet5)))), font=fo, bg=fondo, fg= col_let)
+        self.l54.place(x=col3, y=fila12)
+        #Salidas
+        self.l55 = tkinter.Label(self, text=str(ent_sal[1][3]+ent_sal[1][4]+ent_sal[1][5]+ent_sal[1][6]+ent_sal[1][7]), font=fo, bg=fondo, fg= col_let)
+        self.l55.place(x=col4, y=fila12)
+        self.l56 = tkinter.Label(self, text=str((((ent_sal[1][3])*int(self.txtbillet1))+((ent_sal[1][4])*int(self.txtbillet2))+((ent_sal[1][5])*int(self.txtbillet3))+((ent_sal[1][6])*int(self.txtbillet4))+((ent_sal[1][7])*int(self.txtbillet5)))), font=fo, bg=fondo, fg= col_let)
+        self.l56.place(x=col5, y=fila12)
+        #Saldo
+        self.l57 = tkinter.Label(self, text=str(int(self.cant_tot_b1.cget('text'))+int(self.cant_tot_b2.cget('text'))+int(self.cant_tot_b3.cget('text'))+int(self.cant_tot_b4.cget('text'))+int(self.cant_tot_b5.cget('text'))), font=fo, bg=fondo, fg= col_let)
+        self.l57.place(x=col6, y=fila12)
+        self.l58 = tkinter.Label(self, text=str(int(self.tot_fin_b1.cget('text'))+int(self.tot_fin_b2.cget('text'))+int(self.tot_fin_b3.cget('text'))+int(self.tot_fin_b4.cget('text'))+int(self.tot_fin_b5.cget('text'))), font=fo, bg=fondo, fg= col_let)
+        self.l58.place(x=col7, y=fila12)
+
+        #################
+        #Boton
+        #################
+
+        self.boton = tkinter.Button(self, text="Ok", command=self.salir, font=fo, bg='blue2', fg=col_let, width=10)
+        self.boton.place(x=col1, y=fila13)
+
+    def salir(self):
+        self.destroy()
+        mp=menu_principal()
+        mp.mainloop()
+
+class ingresos_de_dinero(tkinter.Tk):
+    def __init__(self):
+        tkinter.Tk.__init__(self)
+        self.title('Parqueo-Ingresos de dinero')
+        self.geometry('500x400')
+        self.iconbitmap('dolar.ico')
+        self.resizable(0,0)
+
+        fk=open('detalle_uso.dat','r')
+        self.detalle=eval(fk.read())
+        fk.close()
+
+        fk=open('configuracion.dat','r')
+        self.config=eval(fk.read())
+        fk.close()
+
+        op=0
+        if op == 0:
+            fondo='white'
+            col_let='black'
+        else:
+            fondo='gray17'
+            col_let='white'
+        self.configure(bg=fondo)
+
+        #Variables de posicionamiento
+        fo=('Arial', 12)
+        fila1=10
+        fila2=50
+        fila3=80
+        fila4=150
+        fila5=180
+        fila6=210
+        fila7=270
+        fila8=310
+        col1=10
+        col2=100
+        cols2=200
+        col3=350
+
+
+        ##################
+        #Labels de titulos
+        ##################
+
+        self.l1=tkinter.Label(self, text='Ingresos de dinero', font=('Arial', 20, 'bold'), bg=fondo, fg=col_let)
+        self.l1.place(x=col2+20, y=fila1)
+
+        self.l2=tkinter.Label(self, text='Del Día:', font=fo, bg=fondo, fg=col_let)
+        self.l2.place(x=col1, y=fila2)
+
+        self.ls2=tkinter.Label(self, text='Formato dd/mm/aaaa', font=fo, bg=fondo, fg=col_let)
+        self.ls2.place(x=cols2, y=fila2)
+
+        self.l3=tkinter.Label(self, text='Al Día:', font=fo, bg=fondo, fg=col_let)
+        self.l3.place(x=col1, y=fila3)
+
+        self.ls3=tkinter.Label(self, text='Formato dd/mm/aaaa', font=fo, bg=fondo, fg=col_let)
+        self.ls3.place(x=cols2, y=fila3)
+
+        self.ent_fecha1=tkinter.Entry(self, width=10, font=fo, bg='white')
+        self.ent_fecha1.place(x=col2, y=fila2)
+        self.ent_fecha1.bind('<KeyRelease>', self.calc_fechas)
+
+        self.ent_fecha2=tkinter.Entry(self, width=10, font=fo, bg='white')
+        self.ent_fecha2.place(x=col2, y=fila3)
+        self.ent_fecha2.bind('<KeyRelease>', self.calc_fechas)
+
+        self.l4=Label(self, text='Total de Ingresos en efectivo', font=fo, bg=fondo, fg=col_let)
+        self.l4.place(x=col1, y=fila4)
+
+        self.ingresos_efectivo=Label(self, text='0', font=fo, bg=fondo, fg=col_let)
+        self.ingresos_efectivo.place(x=col3, y=fila4)
+
+        self.l5=Label(self, text='Total de Ingresos por tarjeta de crédito', font=fo, bg=fondo, fg=col_let)
+        self.l5.place(x=col1, y=fila5)
+
+        self.ingresos_tarjeta=Label(self, text='0', font=fo, bg=fondo, fg=col_let)
+        self.ingresos_tarjeta.place(x=col3, y=fila5)
+
+        self.l6=Label(self, text='Total de Ingresos', font=fo, bg=fondo, fg=col_let)
+        self.l6.place(x=col1, y=fila6)
+
+        self.ingresos_total=Label(self, text='0', font=fo, bg=fondo, fg=col_let)
+        self.ingresos_total.place(x=col3, y=fila6)
+
+        self.l7=Label(self, text='Estimado de ingresos por recibir', font=fo, bg=fondo, fg=col_let)
+        self.l7.place(x=col1, y=fila7)
+
+        self.estimados_ingresos=Label(self, text=0, font=fo, bg=fondo, fg=col_let)
+        self.estimados_ingresos.place(x=col3, y=fila7)
+
+        self.calc_estimados()
+
+        ##########
+        #Boton
+        ##########
+
+        self.boton = tkinter.Button(self, text="Ok", font=fo, bg='blue2', fg='white', width=10,command=self.salir)
+        self.boton.place(x=col1, y=fila8)
+
+
+    def calc_fechas(self,event):
+        fecha1=self.ent_fecha1.get()
+        fecha2=self.ent_fecha2.get()
+        try:
+            fecha1=datetime.datetime.strptime(fecha1, '%d/%m/%Y')
+            fecha2=datetime.datetime.strptime(fecha2, '%d/%m/%Y')
+            if fecha1 > fecha2:
+                self.ent_fecha1.delete(0, tkinter.END)
+                self.ent_fecha2.delete(0, tkinter.END)
+            else:
+                efectivo=0
+                tarjeta=0
+                for i in self.detalle:
+                    fecha_pag=datetime.datetime.strptime(i[0], '%d/%m/%Y')
+                    if (fecha_pag >= fecha1 and fecha_pag <= fecha2):
+                        if i[2]==0:
+                            efectivo+=i[1]
+                        else:
+                            tarjeta+=i[1]
+                self.ingresos_efectivo.config(text=str(efectivo))
+                self.ingresos_tarjeta.config(text=str(tarjeta))
+                self.ingresos_total.config(text=str(efectivo+tarjeta))
+        except:
+            self.ingresos_efectivo.config(text='0')
+            self.ingresos_tarjeta.config(text='0')
+            self.ingresos_total.config(text='0')
+            pass
+    
+    def calc_estimados(self):
+        fk=open('parqueo.dat','r')
+        parqueo=eval(fk.read())
+        fk.close()
+
+        est=0
+        for p in parqueo.values():
+            if p[3]!=0:
+                pass
+            else:
+                hora_entrada=datetime.datetime.strptime(p[1], '%H:%M %d/%m/%Y')
+                h_s=datetime.datetime.now().strftime('%H:%M %d/%m/%Y')
+                hora_salida=datetime.datetime.strptime(h_s, '%H:%M %d/%m/%Y')
+                diferencia=hora_salida-hora_entrada
+                #se obtiene el total a pagar
+                if ((diferencia.seconds//60)//60)!=0:
+                    if ((diferencia.seconds//60)%60)!=0:
+                        est+=int((((((diferencia.seconds//60)//60))*self.config[1])+self.config[2])+((diferencia.days*24)*self.config[1]))
+                    else:
+                        est+=int((((diferencia.seconds//60)//60)*self.config[1])+((diferencia.days*24)*self.config[1]))
+                else:
+                    est+=self.config[2]
+        self.estimados_ingresos.config(text=str(est))
+        
+    def salir(self):
+        self.destroy()
+        menu_principal().mainloop()
+            
+
 
 menu_principal().mainloop()
