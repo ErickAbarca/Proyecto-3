@@ -7,13 +7,10 @@ Estudiante: Erick Abarca Calderon
 
 Profesor: William Mata Rodriguez
 '''
-
-from cmath import sin
 from tkinter import *
 import tkinter
 from tkinter import messagebox
 from pickle import *
-from pyparsing import col
 from validate_email import validate_email
 import datetime
 import os
@@ -21,6 +18,7 @@ import os
 
 class menu_principal(tkinter.Tk):
     def __init__(self):
+        # Se crea la ventana principal
         Tk.__init__(self)
         self.geometry("550x400")
         self.title("Menu Principal")
@@ -49,19 +47,23 @@ class menu_principal(tkinter.Tk):
         self.btn_3.place(x=posx1, y=200)
 
         self.btn_4 = Button(self, text="Ingresos de dinero",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.abrir_ingresos_de_dinero)
-        self.btn_4.place(x=posx2, y=50)
+        self.btn_4.place(x=posx1, y=275)
         
         self.btn_5 = Button(self, text="Entrada de vehículo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.entrada_de_vehiculo)
-        self.btn_5.place(x=posx2, y=125)
+        self.btn_5.place(x=posx2, y=50)
 
         self.btn_6 = Button(self, text="Cajero del Parqueo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.cajero_del_parqueo)
         self.btn_6.place(x=posx2, y=200)
 
         self.btn_7 = Button(self, text="Salida de vehiculo",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.salida_de_vehiculo)
-        self.btn_7.place(x=posx1, y=275)
+        self.btn_7.place(x=posx2, y=125)
 
         self.btn_6 = Button(self, text="Ayuda",height=altura,width=ancho,bg='blue2',fg='white',font=('Arial Nova',tmn_font),command=self.abrir_ayuda)
         self.btn_6.place(x=posx2, y=275)
+
+    ##################
+    #Funciones de los botones
+    ##################
 
     def abrir_configuracion(self):
         self.destroy()
@@ -99,22 +101,22 @@ class menu_principal(tkinter.Tk):
         self.ingresos_de_dinero.mainloop()
 
     def abrir_ayuda(self):
-        os.startfile('p3.pdf')
+        os.startfile('Manual de usuario.pdf')
 class configuracion(tkinter.Tk):
     def __init__(self):
+        # Se crea la ventana principal
         Tk.__init__(self)
-        self.geometry("600x600")
+        self.geometry("575x550")
         self.title("Parqueo-Configuración")
         self.configure(bg="white")
         self.iconbitmap('settings.ico')
         self.resizable(False, False)
 
-       
-
-        sub_res=[]
+        #variables de ubicacion de los botones
         posxlab=0
         posxent=500
         fo=('Arial',12)
+
         #Se crean los labels y los entrys
         self.lbl_titulo = Label(self, text="Configuración", font=("Arial", 20), bg="white")
         self.lbl_titulo.place(x=175)
@@ -213,98 +215,104 @@ class configuracion(tkinter.Tk):
             if i>0:
                 cajero_lleno=True
                 break
-
+        
+        #Se obtiene el valor de los espacios del parqueo
         self.espacios = self.esp.get()
-        if self.espacios=='':
+        if self.espacios=='':#Si el entry esta vacio se le asigna un valor por defecto
             subres.append(0)
         else:
-            try :
+            try :#Si el entry tiene un valor se verifica que sea un numero
                 self.espacios = int(self.espacios)
-                fk=open('parqueo.dat','r')
+                fk=open('parqueo.dat','r')#Se verifica que no existan autos en el parqueo
                 parqueo=fk.read()
                 fk.close()
                 parqueo=eval(parqueo)
-                if len (parqueo)>0:
+                if len (parqueo)>0:#Si existen autos en el parqueo no se permite guardar la configuración
                     messagebox.showerror("Error","Existen vehiculos en el parqueo")
                     return
                 else:
-                    if self.espacios < 1:
+                    if self.espacios < 1:#Si el valor es menor a 1 no se permite guardar la configuración
                         messagebox.showerror("Error", "La cantidad de espacios debe ser mayor a 0")
                         return
-                    subres.append(self.espacios)        
+                    subres.append(self.espacios)#Si el valor es mayor a 0 se guarda en la lista  
             except ValueError:
                 messagebox.showerror("Error", "La cantidad de espacios debe ser un número")
                 return
 
+        #Se obtiene el valor del precio por hora
         self.pphora = self.pph.get()
-        if self.pphora=='':
+        if self.pphora=='':#Si el entry esta vacio se le asigna un valor por defecto
             subres.append(0)
         else:
-            try :
+            try :#Si el entry tiene un valor se verifica que sea un numero
                 self.pphora = int(self.pphora)
-                if self.pphora < 1:
+                if self.pphora < 1:#Si el valor es menor a 1 no se permite guardar la configuración
                     messagebox.showerror("Error", "El pago por hora debe ser mayor a 0")
                     return
-                subres.append(self.pphora)
+                subres.append(self.pphora)#Si el valor es mayor a 0 se guarda en la lista
             except ValueError:
                 messagebox.showerror("Error", "El pago por hora debe ser un número")
                 return
 
+        #Se obtiene el valor del pago minimo
         self.pago_min = self.pag_min.get()
-        if self.pago_min=='':
+        if self.pago_min=='':#Si el entry esta vacio se le asigna un valor por defecto
             subres.append(0)
         else:
-            try :
+            try :#Si el entry tiene un valor se verifica que sea un numero
                 self.pago_min = int(self.pago_min)
-                if self.pago_min < 1:
+                if self.pago_min < 1:#Si el valor es menor a 1 no se permite guardar la configuración
                     messagebox.showerror("Error", "El pago mínimo debe ser mayor a 0")
                     return
-                subres.append(self.pago_min)
+                subres.append(self.pago_min)#Si el valor es mayor a 0 se guarda en la lista
             except ValueError:
                 messagebox.showerror("Error", "El pago mínimo debe ser un número")
                 return
 
+        #Se obtiene el valor del correo
         self.email = self.correo.get()
-        if self.email=='':
+        if self.email=='':#Si el entry esta vacio se le asigna un valor por defecto
             subres.append('')
         else:
-            if validate_email(self.email)==False:
+            if validate_email(self.email)==False:#Si el correo no es valido no se permite guardar la configuración
                 messagebox.showerror("Error", "El correo no es válido")
                 return
             else:
-                subres.append(self.email)
+                subres.append(self.email)#Si el correo es valido se guarda en la lista
         
+        #Se obtiene el valor de los minutos máximos
         self.minsmaximo = self.minsmax.get()
-
-        if self.minsmaximo=='':
+        if self.minsmaximo=='':#Si el entry esta vacio se le asigna un valor por defecto
             subres.append(0)
         else:
-            try :
+            try :#Si el entry tiene un valor se verifica que sea un numero
                 self.minsmaximo = int(self.minsmaximo)
-                if self.minsmaximo < 0:
+                if self.minsmaximo < 0:#Si el valor es menor a 0 no se permite guardar la configuración
                     messagebox.showerror("Error", "El máximo de minutos debe ser mayor a 0")
                     return
-                subres.append(self.minsmaximo)
+                subres.append(self.minsmaximo)#Si el valor es mayor a 0 se guarda en la lista
             except ValueError:
                 messagebox.showerror("Error", "El máximo de minutos debe ser un número")
                 return
         
+        #Se obtiene el valor de la moneda 1
         self.moneda1 = self.m1.get()
-        if self.moneda1=='':
+        if self.moneda1=='':#Si el entry esta vacio se le asigna un valor por defecto
             subres.append(0)
         else:
-            if cajero_lleno==True:
+            if cajero_lleno==True:#Si el cajero no esta vacio no se permite guardar la configuración
                 messagebox.showerror("Error", "El cajero debe estar vacío para cambiar la denominación")
                 return
-            try :
+            try :#Si el entry tiene un valor se verifica que sea un numero
                 self.moneda1 = int(self.moneda1)
-                if self.moneda1 not in monedas:
+                if self.moneda1 not in monedas:#Si el valor no es una denominación valida no se permite guardar la configuración
                     messagebox.showerror("Error", "La moneda 1 debe ser una de las siguientes denominaciones: 5,10,25,50,100,500")
                 else:
-                    subres.append(self.moneda1)
+                    subres.append(self.moneda1)#Si el valor es una denominación valida se guarda en la lista
             except ValueError:
                 messagebox.showerror("Error", "La denominación de moneda 1 debe ser un número")
 
+        #Se repite lo mismo para el resto de denominaciones
 
         self.moneda2 = self.m2.get()
         if self.moneda2=='':
@@ -486,9 +494,8 @@ class configuracion(tkinter.Tk):
     def salir(self):
         entradas=[self.esp.get(),self.pph.get(),self.pag_min.get(),self.correo.get(),self.minsmax.get(),self.m1.get(),self.m2.get(),self.m3.get(),self.b1.get(),self.b2.get(),self.b3.get(),self.b4.get(),self.b5.get()]
         cambio=False
-        print(entradas)
         for i in entradas:
-            if i=='':
+            if i!='':
                 cambio=True
                 break
         if cambio==True:
@@ -505,6 +512,7 @@ class cargar_cajero(tkinter.Tk):
     def __init__(self):
         Tk.__init__(self)
 
+        #Se crean las variables de ubicacion de los entrys y labels
         fo=("Arial", 12)
         fila1=50
         fila2=80
@@ -520,7 +528,6 @@ class cargar_cajero(tkinter.Tk):
         fila12=390
         fila13=430
         fila14=470
-
         col1=10
         col2=230
         col3=310
@@ -529,11 +536,13 @@ class cargar_cajero(tkinter.Tk):
         col6=725
         col7=810
 
+        #Se lee el archivo de configuracion y se guarda en una variable
         f=open('configuracion.dat','r')
         line=f.read()
         f.close()
         conf=eval(line)
 
+        #Variables con las denominaciones configuradas
         self.txtmoneda1=str(conf[5])
         self.txtmoneda2=str(conf[6])
         self.txtmoneda3=str(conf[7])
@@ -543,11 +552,13 @@ class cargar_cajero(tkinter.Tk):
         self.txtbillet4=str(conf[11])
         self.txtbillet5=str(conf[12])
 
+        #Se lee el archivo de cajero y se guarda en una variable
         fi=open('cajero.dat','r')
         salact=fi.read()
         fi.close()
         salact=eval(salact)
 
+        #Variables con las cantidades antes de la carga
         self.cantmoneda1=salact[0]
         self.cantmoneda2=salact[1]
         self.cantmoneda3=salact[2]
@@ -573,11 +584,16 @@ class cargar_cajero(tkinter.Tk):
         #Variable para definir cuanto dinero se ha cargado
         self.total_entrada=[0,0,0,0,0,0,0,0]
 
+        #configuracion de la ventana
         self.title("Parqueo-Cargar Cajero")
         self.geometry("900x550")
         self.resizable(False, False)
         self.config(bg='white')
         self.iconbitmap('dolar.ico')
+
+        ###############################
+        #Se crean los labels y entrys
+        ###############################
 
         self.l1 = tkinter.Label(self, text="Cargar cajero", font=("Arial", 20), bg='white')
         self.l1.place(x=350, y=10)
@@ -1209,11 +1225,14 @@ class cargar_cajero(tkinter.Tk):
     #########################
 
     def btn_guardar(self):
+        #se pregunta si se desea guardar
         ask=messagebox.askquestion("Guardar","¿Desea guardar los cambios?")
-        if ask=='yes':
+        if ask=='yes':#si se desea guardar
+            #Se guardan los valores en el archivo cajero
             fk=open('cajero.dat','w')
             fk.write(str(self.subres))
             fk.close()
+            #Se guardan los valores en el archivo de entradas y salidas
             fk=open('ent_sal.dat','r')
             ent_sal=eval(fk.read())
             fk.close()
@@ -1222,6 +1241,7 @@ class cargar_cajero(tkinter.Tk):
             fk=open('ent_sal.dat','w')
             fk.write(str(ent_sal))
             fk.close()
+            
             messagebox.showinfo("Guardar","Se han guardado los cambios")
             self.destroy()
             cargar_cajero().mainloop()
@@ -1239,10 +1259,17 @@ class cargar_cajero(tkinter.Tk):
     def btn_vaciar(self):
         ask=messagebox.askquestion("Vaciar","¿Desea vaciar el cajero?")
         if ask=='yes':
+            #Se guardan los valores en el archivo cajero
             self.subres=[0,0,0,0,0,0,0,0]
             fk=open('cajero.dat','w')
             fk.write(str(self.subres))
             fk.close()
+            #Se guardan los valores en el archivo de entradas y salidas
+            res_ent_sal=[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]
+            fk=open('ent_sal.dat','w')
+            fk.write(str(res_ent_sal))
+            fk.close()
+
             messagebox.showinfo("Vaciar","Se ha vaciado el cajero")
             self.destroy()
             cargar_cajero().mainloop()
@@ -1250,24 +1277,27 @@ class cargar_cajero(tkinter.Tk):
             messagebox.showinfo("Vaciar","No se ha vaciado el cajero")
 class entrada_de_vehiculo(tkinter.Tk):
     def __init__(self):
+        #Se crea la ventana
         tkinter.Tk.__init__(self)
         self.title('Parqueo-Entrada de vehículos')
         self.geometry('525x350')
         self.resizable(0,0)
         self.iconbitmap('icon.ico')
 
+        #Se lee el archivo de configuracion
         fk=open('configuracion.dat','r')
         self.config=fk.read()
         fk.close()
         self.config=eval(self.config)
 
+        #Se lee el archivo de parqueo
         pq=open('parqueo.dat','r')
         self.parqueo=pq.read()
         pq.close()
         self.parqueo=eval(self.parqueo)
 
+        #Variables de pososicionamiento en la ventana
         fo=('Arial',12)
-
         col1=20
         col2=250
         fila1=50
@@ -1276,6 +1306,9 @@ class entrada_de_vehiculo(tkinter.Tk):
         fila4=170
         fila5=210
         fila6=250
+
+        #Se crean los labels
+
         self.l1=tkinter.Label(self,text='Entrada de Vehículo',font=('Arial',20))
         self.l1.place(x=125,y=10)
 
@@ -1284,9 +1317,9 @@ class entrada_de_vehiculo(tkinter.Tk):
 
         self.total_espacios=int(int(self.config[0])-int(len(self.parqueo)))
 
-        if self.total_espacios>0:
+        if self.total_espacios>0:#Si hay espacios disponibles
             self.l3=tkinter.Label(self,text=str(self.total_espacios),font=fo)
-        else:
+        else:#Si no hay espacios disponibles
             self.l3=tkinter.Label(self,text='NO HAY ESPACIOS',font=('Arial',20,'bold'),fg='red')
 
         self.l3.place(x=col2,y=fila1)
@@ -1300,6 +1333,7 @@ class entrada_de_vehiculo(tkinter.Tk):
         self.l5=tkinter.Label(self,text='Campo Asignado',font=fo)
         self.l5.place(x=col1,y=fila3)
 
+        #Se selcciona el campo asignado, siendo este el menor posible
         if self.total_espacios!=0:
             for i in range(self.config[0]+1):
                 if i not in self.parqueo:
@@ -1308,7 +1342,7 @@ class entrada_de_vehiculo(tkinter.Tk):
                     else:
                         self.espacio_asignado=i
                         break
-        else:
+        else:#Si no hay espacios disponibles
             self.espacio_asignado=0
         
         self.l6=tkinter.Label(self,text=str(self.espacio_asignado),font=fo)
@@ -1342,14 +1376,15 @@ class entrada_de_vehiculo(tkinter.Tk):
         self.b2.place(x=col2,y=fila6)
 
 
-    def btn_ok(self):
-        placa=self.ent_placa.get()
-        if self.total_espacios==0:
+    def btn_ok(self):#Se guarda el vehiculo en el archivo de parqueo
+        placa=self.ent_placa.get()#Se obtiene la placa del vehiculo
+        if self.total_espacios==0:#Si no hay espacios disponibles
             messagebox.showinfo("Error","No hay espacios disponibles")
             return
-        if placa=='':
+        if placa=='':#Si no se ingresa la placa
             messagebox.showinfo('Error','No ha ingresado la placa')
         else:
+            #Se verifica que el vehiculo no este en el parqueo
             ex=False
             for i in self.parqueo.values():
                 if placa in i:
@@ -1358,8 +1393,10 @@ class entrada_de_vehiculo(tkinter.Tk):
             if ex==True:
                 messagebox.showinfo('Error','El vehículo ya está en el parqueo')
             else:
+                #Se agrega el vehiculo al parqueo
                 ask=messagebox.askquestion('Guardar','¿Desea registrar el vehículo?')
                 if ask=='yes':
+                    #Se agrega el vehiculo al parqueo
                     self.parqueo[self.espacio_asignado]=[placa,self.hora_entrada,0,0,0,self.espacio_asignado]
                     fk=open('parqueo.dat','w')
                     fk.write(str(self.parqueo))
@@ -1588,17 +1625,17 @@ class cajero_del_parqueo(tkinter.Tk):
         self.btn_anular.place(x=col1,y=fila18)
 
     def validar_placa(self,event):
-        placa=self.ent_placa.get()
+        placa=self.ent_placa.get()#Obtenemos la placa
 
-        for i in self.parqueo.values():
-            if placa in i:
-                if i[2]!=0:
+        for i in self.parqueo.values():#Recorremos el diccionario
+            if placa in i:#Si la placa esta en el diccionario
+                if i[2]!=0:#Si la placa esta en el diccionario y ya ha pagado
                     messagebox.showinfo('Error','El auto ya pagó')
                     break
                 else:
-                    self.auto_select=i
-                    self.hora_entrada=i[1]
-                    self.lab_hora_entrada.config(text=self.hora_entrada)
+                    self.auto_select=i#Si la placa esta en el diccionario y no ha pagado, seleccionamos el auto
+                    self.hora_entrada=i[1]#Obtenemos la hora de entrada
+                    self.lab_hora_entrada.config(text=self.hora_entrada)#Mostramos la hora de entrada
                     #se obtiene la diferencia de horas entrada y salida
                     hora_entrada=datetime.datetime.strptime(self.hora_entrada,'%H:%M %d/%m/%Y')
                     hora_salida=datetime.datetime.strptime(self.hora_salida,'%H:%M %d/%m/%Y')
@@ -1612,36 +1649,43 @@ class cajero_del_parqueo(tkinter.Tk):
                             self.total_a_pagar=int((((diferencia.seconds//60)//60)*self.config[1])+((diferencia.days*24)*self.config[1]))
                     else:
                         self.total_a_pagar=self.config[2]
-                    self.lab_total_pagar.config(text=str(self.total_a_pagar))
-                    self.lab_cambio.config(text=str(0-self.total_a_pagar))
+                    self.lab_total_pagar.config(text=str(self.total_a_pagar))#Mostramos el total a pagar
+                    self.lab_cambio.config(text=str(0-self.total_a_pagar))#Mostramos el cambio
                     break     
-            else:
+            else:#Si la placa no esta en el diccionario
+                #Todos los labels se limpian
                 self.lab_hora_entrada.config(text=0)
                 self.lab_tiempo_cobrado.config(text=0)
                 self.lab_total_pagar.config(text=0)
                 self.lab_cambio.config(text=0)
 
     def btn_moneda1(self):
-        self.total_pagar=int(self.lab_total_pagar.cget('text'))
-        if self.total_pagar>0:
+        self.total_pagar=int(self.lab_total_pagar.cget('text'))#Obtenemos el total a pagar
+        if self.total_pagar>0:#Si el total a pagar es mayor a 0
+            #al label pagado se le agrega el valor de la moneda
             subtotal=int(self.lab_pagado.cget('text'))+self.config[5]
             self.lab_pagado.config(text=str(subtotal))
+            #al label cambio se le resta el valor de la moneda
             subcambio=int(self.lab_cambio.cget('text'))
             self.lab_cambio.config(text=str(subcambio+self.config[5]))
-            self.pago[0]+=1
-            if subtotal>self.total_pagar:
-                self.cambio()
+            self.pago[0]+=1#Se suma 1 a la lista de pago
+            if subtotal>self.total_pagar:#Si el subtotal es mayor al total a pagar
+                self.cambio()#Se llama a la funcion cambio
                 self.destroy()
                 mp=menu_principal()
                 mp.mainloop()
-            elif subtotal==self.total_pagar:
-                self.sin_cambio()
+            elif subtotal==self.total_pagar:#Si el subtotal es igual al total a pagar
+                self.sin_cambio()#Se llama a la funcion sin_cambio
                 messagebox.showinfo('Cajero','Gracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
                 self.destroy()
                 mp=menu_principal()
                 mp.mainloop()
         else:
             messagebox.showinfo('Error','Ingrese una placa')
+    
+    #########################################
+    #Se hace lo mismo para cada denominacion
+    #########################################
 
     def btn_moneda2(self):
         self.total_pagar=int(self.lab_total_pagar.cget('text'))
@@ -1798,24 +1842,29 @@ class cajero_del_parqueo(tkinter.Tk):
             messagebox.showinfo('Error','Ingrese una placa')
 
     def pago_tarjeta(self,event):
-        ent=self.tarjeta.get()
-        pago=int(self.lab_total_pagar.cget('text'))
-        if pago>0:
-            if len(ent)==10:
+        ent=self.tarjeta.get()#obtenemos el valor de la entrada tarjeta
+        pago=int(self.lab_total_pagar.cget('text'))#obtenemos el valor del total a pagar
+        if pago>0:#si el total a pagar es mayor a 0
+            if len(ent)==10:#si la longitud de la entrada es 10
+                #Se valida el pago con la tarjeta
                 messagebox.showinfo('Pago','Pago realizado con tarjeta\nGracias por su visita\nCuenta con '+str(self.config[4])+' minutos para salir')
 
+                #Se añade el detalle de pago al detalle de uso
                 self.detalle_uso.append([datetime.datetime.now().strftime('%d/%m/%Y'),self.total_a_pagar,1])
 
                 a_pagar=self.auto_select[3]
                 a_pagar+=self.total_a_pagar
+                #Se actualiza los valores del auto
                 newdato=[self.auto_select[0],self.auto_select[1],self.hora_salida,a_pagar,0,self.auto_select[5]]
 
                 self.parqueo[self.auto_select[5]]=newdato
 
+                #Se guarda el archivo de parqueo
                 fk=open('parqueo.dat','w')
                 fk.write(str(self.parqueo))
                 fk.close()
 
+                #Se guarda el archivo de detalle de uso
                 fk=open('detalle_uso.dat','w')
                 fk.write(str(self.detalle_uso))
                 fk.close()
@@ -1825,7 +1874,7 @@ class cajero_del_parqueo(tkinter.Tk):
                 mp.mainloop()
 
                 
-        else:
+        else:#si el total a pagar es menor a 0
             messagebox.showinfo('Error','Ingrese una placa')
             self.tarjeta.delete(0,END)
 
@@ -1868,15 +1917,17 @@ class cajero_del_parqueo(tkinter.Tk):
         fk.close()
 
     def cambio(self):
-        tot_cambio=int(self.lab_cambio.cget('text'))
-        if tot_cambio>0:
-            if self.config[12]!=0:
-                if tot_cambio>=self.config[12]:
-                    cambio_b5=tot_cambio//self.config[12]
-                    if cambio_b5>self.cajero[7]:
-                        cambio_b5=self.cajero[7]
-                    tot_cambio-=cambio_b5*self.config[12]
-                    self.b_m_cambio[7]+=cambio_b5
+        tot_cambio=int(self.lab_cambio.cget('text'))#obtenemos el valor del cambio
+        if tot_cambio>0:#si el cambio es mayor a 0
+            if self.config[12]!=0:#si el billete 5 es diferente de 0
+                if tot_cambio>=self.config[12]:#si el cambio es mayor o igual al billete 5
+                    cambio_b5=tot_cambio//self.config[12]#se calcula la cantidad de billetes 5
+                    if cambio_b5>self.cajero[7]:#si la cantidad de billetes 5 es mayor a la cantidad de billetes 5 en el cajero
+                        cambio_b5=self.cajero[7]#se asigna la cantidad de billetes 5 en el cajero
+                    tot_cambio-=cambio_b5*self.config[12]#se resta la cantidad de billetes 5 del cambio
+                    self.b_m_cambio[7]+=cambio_b5#se añade la cantidad de billetes 5 al cambio
+
+        #se repite el proceso para el resto de los billetes
             if self.config[11]!=0:
                 if tot_cambio>=self.config[11]:
                     cambio_b4=tot_cambio//self.config[11]
@@ -1928,9 +1979,9 @@ class cajero_del_parqueo(tkinter.Tk):
                     tot_cambio-=cambio_m1*self.config[5]
                     self.b_m_cambio[0]+=cambio_m1
 
-            if tot_cambio!=0:
-                messagebox.showinfo('Error','No hay suficiente cambio')
-            else:
+            if tot_cambio!=0:#si el cambio es diferente de 0
+                messagebox.showinfo('Error','No hay suficiente cambio')#se muestra un mensaje de error
+            else:#si el cambio es igual a 0 se muestra el desglose del cambio
                 self.cam_b5.config(text=str(self.b_m_cambio[7])+' De '+str(self.config[12]))
                 self.cam_b4.config(text=str(self.b_m_cambio[6])+' De '+str(self.config[11]))
                 self.cam_b3.config(text=str(self.b_m_cambio[5])+' De '+str(self.config[10]))
@@ -1986,20 +2037,24 @@ class cajero_del_parqueo(tkinter.Tk):
             mp.mainloop()
 class salida_de_vehiculo(tkinter.Tk):
     def __init__(self):
+        #se inicializa la ventana
         tkinter.Tk.__init__(self)
         self.title('Parqueo-Salida de Vehiculo')
         self.geometry('500x175')
         self.resizable(0,0)
         self.iconbitmap('icon.ico')
 
+        #se lee el archivo de configuracion
         fk=open('configuracion.dat','r')
         self.config=eval(fk.read())
         fk.close()
 
+        #se lee el archivo de parqueo
         fk=open('parqueo.dat','r')
         self.parqueo=eval(fk.read())
         fk.close()
 
+        #Se crean los objetos de la ventana
         self.l1=tkinter.Label(self,text='Salida de vehículo',font=('Arial',20,'bold'))
         self.l1.place(x=125,y=10)
 
@@ -2017,38 +2072,40 @@ class salida_de_vehiculo(tkinter.Tk):
 
 
     def btn_salida(self):
-        placa=self.ent_placa.get()
-        if placa=='':
+        placa=self.ent_placa.get()#se obtiene la placa del vehiculo
+        if placa=='':#si la placa esta vacia se muestra un mensaje de error
             messagebox.showinfo('Error','Ingrese la placa')
         else:
-            for pos_i,i in enumerate(self.parqueo.values()):
-                if i[0]==placa:
-                    if i[3]==0:
+            for pos_i,i in enumerate(self.parqueo.values()):#se busca el vehiculo en el parqueo
+                if i[0]==placa:#si se encuentra la placa
+                    if i[3]==0:#si el vehiculo no ha pagado se muestra un mensaje de error
                         messagebox.showinfo('Error','El vehículo no ha pagado')
                         return
-                    else:
-                        hora_pago=datetime.datetime.strptime(i[2],'%H:%M %d/%m/%Y')
-                        hora_salida=datetime.datetime.now().strftime('%H:%M %d/%m/%Y')
+                    else:#si el vehiculo ha pagado
+                        hora_pago=datetime.datetime.strptime(i[2],'%H:%M %d/%m/%Y')#se obtiene la hora de pago
+                        hora_salida=datetime.datetime.now().strftime('%H:%M %d/%m/%Y')#se obtiene la hora actual
                         hora_salida=datetime.datetime.strptime(hora_salida,'%H:%M %d/%m/%Y')
-                        dif_tiempo=hora_salida-hora_pago
-                        if dif_tiempo.seconds%60 > 0 or dif_tiempo.seconds//60>self.config[4]:
+                        dif_tiempo=hora_salida-hora_pago#se obtiene la diferencia de tiempo
+                        if dif_tiempo.seconds%60 > 0 or dif_tiempo.seconds//60>self.config[4]:#si el tiempo de salida es mayor a los minutos máximos se muestra un mensaje de error
                             messagebox.showinfo('Error','Tiempo de salida excedido\nDebe regresar a pagar la diferencia')
-                            self.parqueo[pos_i+1][1]=self.parqueo[pos_i+1][2]
-                            self.parqueo[pos_i+1][2]=0
+                            #se asigna a la hora de entrada del vehiculo la hora actual para que pague la diferencia
+                            self.parqueo[i[5]][1]=i[2]
+                            self.parqueo[i[5]][2]=0
+                            #se actualiza el archivo de parqueo
                             fk=open('parqueo.dat','w')
                             fk.write(str(self.parqueo))
                             fk.close()
                             return
-                        else:
-                            del self.parqueo[i[5]]
-                            print(self.parqueo)
+                        else:#si el tiempo de salida es menor a los minutos máximos
+                            del self.parqueo[i[5]]#se elimina el vehiculo del parqueo y se guarda el archivo
                             fk=open('parqueo.dat','w')
                             fk.write(str(self.parqueo))
                             fk.close()
-                        messagebox.showinfo('Salida','Gracias por su visita')
-                        self.destroy()
-                        mp=menu_principal()
-                        mp.mainloop()
+
+                            messagebox.showinfo('Salida','Gracias por su visita')
+                            self.destroy()
+                            mp=menu_principal()
+                            mp.mainloop()
             messagebox.showinfo('Salida','El vehículo no está registrado')
 
     def btn_cancelar(self):
@@ -2057,21 +2114,22 @@ class salida_de_vehiculo(tkinter.Tk):
         mp.mainloop()
 class saldo_del_cajero(tkinter.Tk):
     def __init__(self):
+        #se inicializa la ventana
         tkinter.Tk.__init__(self)
         self.title('Parqueo-Saldo del Cajero')
         self.geometry('900x550')
         self.resizable(0,0)
         self.iconbitmap('dolar.ico')
-
+        #se lee el archivo de configuracion
         fk=open('configuracion.dat','r')
         config=eval(fk.read())
         fk.close()
-
+        #se lee el archivo de entradas y salidas
         fk=open('ent_sal.dat','r')
         ent_sal=eval(fk.read())
         fk.close()
 
-        tema=1
+        tema=0
 
         if tema==0:
             fondo='white'
@@ -2082,6 +2140,7 @@ class saldo_del_cajero(tkinter.Tk):
 
         self.config(bg=fondo)
 
+        #Variables de posicionamiento
         fo=("Arial", 12)
         fila1=50
         fila2=80
@@ -2385,26 +2444,28 @@ class saldo_del_cajero(tkinter.Tk):
         #Boton
         #################
 
-        self.boton = tkinter.Button(self, text="Ok", command=self.salir, font=fo, bg='blue2', fg=col_let, width=10)
+        self.boton = tkinter.Button(self, text="Ok", command=self.salir, font=fo, bg='blue2', fg='white', width=10)
         self.boton.place(x=col1, y=fila13)
 
     def salir(self):
         self.destroy()
         mp=menu_principal()
         mp.mainloop()
-
 class ingresos_de_dinero(tkinter.Tk):
     def __init__(self):
+        #Se inicializa la ventana
         tkinter.Tk.__init__(self)
         self.title('Parqueo-Ingresos de dinero')
         self.geometry('500x400')
         self.iconbitmap('dolar.ico')
         self.resizable(0,0)
 
+        #se lee el archivo detalle de uso
         fk=open('detalle_uso.dat','r')
         self.detalle=eval(fk.read())
         fk.close()
 
+        #se lee el archivo de configuracion
         fk=open('configuracion.dat','r')
         self.config=eval(fk.read())
         fk.close()
@@ -2485,7 +2546,7 @@ class ingresos_de_dinero(tkinter.Tk):
         self.estimados_ingresos=Label(self, text=0, font=fo, bg=fondo, fg=col_let)
         self.estimados_ingresos.place(x=col3, y=fila7)
 
-        self.calc_estimados()
+        self.calc_estimados()#calcula los estimados
 
         ##########
         #Boton
@@ -2496,61 +2557,60 @@ class ingresos_de_dinero(tkinter.Tk):
 
 
     def calc_fechas(self,event):
-        fecha1=self.ent_fecha1.get()
+        fecha1=self.ent_fecha1.get()#Se obtienen las fechas
         fecha2=self.ent_fecha2.get()
         try:
-            fecha1=datetime.datetime.strptime(fecha1, '%d/%m/%Y')
+            fecha1=datetime.datetime.strptime(fecha1, '%d/%m/%Y')#se convierte a datetime
             fecha2=datetime.datetime.strptime(fecha2, '%d/%m/%Y')
-            if fecha1 > fecha2:
+            if fecha1 > fecha2:#se verifica que la fecha 1 sea mayor a la fecha 2
                 self.ent_fecha1.delete(0, tkinter.END)
                 self.ent_fecha2.delete(0, tkinter.END)
-            else:
+            else:#Se calcula el total de ingresos
                 efectivo=0
                 tarjeta=0
-                for i in self.detalle:
-                    fecha_pag=datetime.datetime.strptime(i[0], '%d/%m/%Y')
-                    if (fecha_pag >= fecha1 and fecha_pag <= fecha2):
-                        if i[2]==0:
+                for i in self.detalle:#se recorre el detalle
+                    fecha_pag=datetime.datetime.strptime(i[0], '%d/%m/%Y')#se convierte a datetime
+                    if (fecha_pag >= fecha1 and fecha_pag <= fecha2):#se verifica que la fecha de pago este entre las fechas
+                        if i[2]==0:#se verifica que el tipo de pago sea efectivo
                             efectivo+=i[1]
-                        else:
+                        else:#se verifica que el tipo de pago sea tarjeta
                             tarjeta+=i[1]
-                self.ingresos_efectivo.config(text=str(efectivo))
-                self.ingresos_tarjeta.config(text=str(tarjeta))
-                self.ingresos_total.config(text=str(efectivo+tarjeta))
-        except:
+                self.ingresos_efectivo.config(text=str(efectivo))#se actualiza el total de ingresos en efectivo
+                self.ingresos_tarjeta.config(text=str(tarjeta))#se actualiza el total de ingresos por tarjeta
+                self.ingresos_total.config(text=str(efectivo+tarjeta))#se actualiza el total de ingresos
+        except:#si no se establece en 0 los valores
             self.ingresos_efectivo.config(text='0')
             self.ingresos_tarjeta.config(text='0')
             self.ingresos_total.config(text='0')
             pass
     
     def calc_estimados(self):
+        #se lee el archivo de parquo
         fk=open('parqueo.dat','r')
         parqueo=eval(fk.read())
         fk.close()
 
         est=0
-        for p in parqueo.values():
-            if p[3]!=0:
+        for p in parqueo.values():#se recorre el parqueo
+            if p[3]!=0:#se verifica que el pago sea diferente a 0
                 pass
             else:
-                hora_entrada=datetime.datetime.strptime(p[1], '%H:%M %d/%m/%Y')
-                h_s=datetime.datetime.now().strftime('%H:%M %d/%m/%Y')
-                hora_salida=datetime.datetime.strptime(h_s, '%H:%M %d/%m/%Y')
-                diferencia=hora_salida-hora_entrada
-                #se obtiene el total a pagar
+                hora_entrada=datetime.datetime.strptime(p[1], '%H:%M %d/%m/%Y')#se convierte a datetime la hora de entrada
+                h_s=datetime.datetime.now().strftime('%H:%M %d/%m/%Y')#se obtiene la hora actual
+                hora_salida=datetime.datetime.strptime(h_s, '%H:%M %d/%m/%Y')#se convierte a datetime la hora actual
+                diferencia=hora_salida-hora_entrada#se calcula la diferencia de horas
+                #se calcula el valor que tiene que pagar
                 if ((diferencia.seconds//60)//60)!=0:
-                    if ((diferencia.seconds//60)%60)!=0:
+                    if ((diferencia.seconds//60)%60)!=0:#
                         est+=int((((((diferencia.seconds//60)//60))*self.config[1])+self.config[2])+((diferencia.days*24)*self.config[1]))
                     else:
                         est+=int((((diferencia.seconds//60)//60)*self.config[1])+((diferencia.days*24)*self.config[1]))
                 else:
                     est+=self.config[2]
-        self.estimados_ingresos.config(text=str(est))
+        self.estimados_ingresos.config(text=str(est))#se actualiza el total de estimados
         
     def salir(self):
         self.destroy()
         menu_principal().mainloop()
             
-
-
 menu_principal().mainloop()
